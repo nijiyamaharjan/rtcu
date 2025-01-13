@@ -1,0 +1,93 @@
+-- Create Organization Table
+CREATE TABLE Organization (
+    organizationID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    contactInfo VARCHAR
+);
+
+CREATE TYPE project_status AS ENUM ('ongoing', 'completed');
+CREATE TYPE project_type AS ENUM ('research', 'consultancy');
+
+-- Create Project Table
+CREATE TABLE Project (
+    projectID VARCHAR PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    description VARCHAR,
+    type project_type,
+    startDate DATE,
+    endDate DATE,
+    status project_status,
+    budget VARCHAR,
+    fundingOrgID VARCHAR REFERENCES Organization(organizationID),
+    outsourcingOrgID VARCHAR REFERENCES Organization(organizationID)
+);
+
+-- Create TeamMembers Table
+CREATE TABLE TeamMembers (
+    memberID VARCHAR PRIMARY KEY,
+    projectID VARCHAR REFERENCES Project(projectID),
+    trainingID VARCHAR REFERENCES Training(trainingID),
+    name VARCHAR NOT NULL,
+    role VARCHAR,
+    expertise VARCHAR,
+    contactInfo VARCHAR
+);
+
+-- Create Faculty Table
+CREATE TABLE Faculty (
+    facultyID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    role VARCHAR,
+    expertise VARCHAR,
+    contactInfo VARCHAR
+);
+
+-- Create Expert Table
+CREATE TABLE Expert (
+    expertID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    role VARCHAR,
+    expertise VARCHAR,
+    contactInfo VARCHAR
+);
+
+-- Create Student Table
+CREATE TABLE Student (
+    studentID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    expertise VARCHAR,
+    contactInfo VARCHAR
+);
+
+-- Create Trainings Table
+CREATE TABLE Training (
+    trainingID VARCHAR PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    startDate DATE,
+    endDate DATE
+);
+
+-- Create Junction Tables
+CREATE TABLE TeamMember_Student (
+    memberID VARCHAR REFERENCES TeamMembers(memberID),
+    studentID VARCHAR REFERENCES Student(studentID),
+    PRIMARY KEY (memberID, studentID)
+);
+
+CREATE TABLE TeamMember_Expert (
+    memberID VARCHAR REFERENCES TeamMembers(memberID),
+    expertID VARCHAR REFERENCES Expert(expertID),
+    PRIMARY KEY (memberID, expertID)
+);
+
+CREATE TABLE TeamMember_Faculty (
+    memberID VARCHAR REFERENCES TeamMembers(memberID),
+    facultyID VARCHAR REFERENCES Faculty(facultyID),
+    PRIMARY KEY (memberID, facultyID)
+);
+
+CREATE TABLE Training_TeamMember (
+    trainingID VARCHAR REFERENCES Training(trainingID),
+    memberID VARCHAR REFERENCES TeamMembers(memberID),
+    PRIMARY KEY (trainingID, memberID)
+);
