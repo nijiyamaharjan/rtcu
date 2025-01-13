@@ -11,9 +11,9 @@ const getAllTeamMembers = async (projectId, res) => {
 };
 
 const getTeamMember = async (req, res) => {
-    const { id } = req.params;
+    const { projectId, memberID } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM TeamMembers WHERE memberID = $1', [id]);
+        const result = await pool.query('SELECT * FROM TeamMembers WHERE projectID = $1 AND memberID = $2', [projectId, memberID]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Team member not found.' });
         }
@@ -25,14 +25,15 @@ const getTeamMember = async (req, res) => {
 };
 
 const createTeamMember = async (req, res) => {
-    const { memberID, projectID, name, role, expertise, contactInfo } = req.body;
+    const { projectId } = req.params; // Get projectID from URL params
+    const { memberID, name, role, expertise, contactInfo } = req.body;
     try {
         const query = `
             INSERT INTO TeamMembers (memberID, projectID, name, role, expertise, contactInfo)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
         `;
-        const values = [memberID, projectID, name, role, expertise, contactInfo];
+        const values = [memberID, projectId, name, role, expertise, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -42,7 +43,7 @@ const createTeamMember = async (req, res) => {
 };
 
 const updateTeamMember = async (req, res) => {
-    const { id } = req.params;
+    const { projectId, memberID } = req.params; // Get projectID and memberID from URL params
     const { name, role, expertise, contactInfo } = req.body;
     
     if (!name && !role && !expertise && !contactInfo) {
@@ -70,12 +71,12 @@ const updateTeamMember = async (req, res) => {
             values.push(contactInfo);
         }
 
-        values.push(id);
+        values.push(memberID, projectId); // Add projectId for validation
 
         const query = `
             UPDATE TeamMembers
             SET ${updates.join(', ')}
-            WHERE memberID = $${values.length}
+            WHERE memberID = $${values.length - 1} AND projectID = $${values.length}
             RETURNING *;
         `;
         
@@ -93,9 +94,9 @@ const updateTeamMember = async (req, res) => {
 };
 
 const deleteTeamMember = async (req, res) => {
-    const { id } = req.params;
+    const { projectId, memberID } = req.params; // Get projectID and memberID from URL params
     try {
-        const result = await pool.query('DELETE FROM TeamMembers WHERE memberID = $1 RETURNING *', [id]);
+        const result = await pool.query('DELETE FROM TeamMembers WHERE memberID = $1 AND projectID = $2 RETURNING *', [memberID, projectId]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Team member not found.' });
         }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { TeamMembers } from "./TeamMembers";
+import { Link } from "react-router-dom";
+
 export const Projects = () => {
   const [projects, setProjects] = useState([]);
 
@@ -11,52 +12,31 @@ export const Projects = () => {
         setProjects(json);
       }
     };
-    console.log(projects)
-
     fetchProjects();
   }, []);
 
   return (
     <div id="projects" className="px-4">
-      <p className="text-2xl font-semibold py-4">Projects</p>
-      <ul className="space-y-6">
-        {projects.map((project) => (
-          <li
-            key={project.projectid}
-            className="border-b border-gray-300 pb-4 last:border-none"
-          >
-            <h3 className="text-lg font-medium">{project.title}</h3>
-            <p className="text-sm text-gray-600">{project.description}</p>
-            <div className="grid grid-cols-2 gap-y-2 mt-2 text-sm">
-              <span>
-                <strong>Project ID:</strong> {project.projectid}
-              </span>
-              <span>
-                <strong>Type:</strong> {project.type}
-              </span>
-              <span>
-                <strong>Start Date:</strong> {project.startdate}
-              </span>
-              <span>
-                <strong>End Date:</strong> {project.enddate}
-              </span>
-              <span>
-                <strong>Status:</strong> {project.status}
-              </span>
-              <span>
-                <strong>Funding Org:</strong> {project.fundingorgid}
-              </span>
-              <span>
-                <strong>Outsourcing Org:</strong> {project.outsourcingorgid}
-              </span>
-            </div>
-            <div className="mt-2">
-              <strong>Team Members:</strong>
-              <TeamMembers projectID={project.projectid} />
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+  <p className="text-2xl font-semibold py-4">Projects</p>
+  <Link to={"/add-project"} className="text-blue-500">Add Faculty</Link>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {projects.map((project) => (
+      <div
+        key={project.projectid}
+        className="p-4 border border-gray-300 rounded-lg"
+      >
+        <h3 className="text-lg font-medium mb-2">{project.title}</h3>
+        <p className="text-sm text-gray-600 mb-4">{project.description}</p>
+        <Link
+          to={`/project/${project.projectid}`}
+          className="text-blue-500 hover:underline"
+        >
+          Details
+        </Link>
+      </div>
+    ))}
+  </div>
+</div>
+
       );
 };

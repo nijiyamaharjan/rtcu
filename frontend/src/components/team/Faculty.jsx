@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from 'react-router-dom';
 
 export const Faculty = () => {
   const [faculty, setFaculty] = useState([])
@@ -15,19 +16,37 @@ export const Faculty = () => {
     fetchFaculty()
   }, [])
   return (
-    <div>
-      <p className="text-2xl py-4">Faculty</p>
-      <ul className="flex">
+    <div id="faculty" className="px-4">
+      <p className="text-2xl font-semibold py-4">Faculty</p>
+      <Link to={"/add-faculty"} className="text-blue-500">Add Faculty</Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {faculty.map((person) => (
-          <li key={person.facultyid} className="py-2">
-              <p>Faculty ID : {person.facultyid}</p>
-              <p>Name : {person.name}</p>
-              <p>Person : {person.role}</p>
-              <p>Expertise : {person.expertise}</p>
-              <p>Contact Info : {person.contactInfo}</p>
-          </li>
+          <div
+            key={person.facultyid}
+            className="p-4 border border-gray-300 rounded-lg"
+          >
+            <h3 className="text-lg font-medium mb-2">{person.name}</h3>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Faculty ID:</span> {person.facultyid}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Role:</span> {person.role}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Expertise:</span> {person.expertise}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Contact Info:</span> {person.contactInfo}
+            </p>
+            <Link
+          to={`/faculty/${person.facultyid}`}
+          className="text-blue-500 hover:underline"
+        >
+          Details
+        </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }

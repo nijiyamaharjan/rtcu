@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Experts = () => {
   const [experts, setExperts] = useState([]);
@@ -11,25 +12,41 @@ export const Experts = () => {
         setExperts(json);
       }
     };
-    console.log(experts)
-
     fetchExperts();
   }, []);
 
   return (
-    <div>
-      <p className="text-2xl py-4">Experts</p>
-      <ul className="flex">
+    <div id="experts" className="px-4">
+      <p className="text-2xl font-semibold py-4">Experts</p>
+      <Link to={"/add-expert"} className="text-blue-500">Add Expert</Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {experts.map((expert) => (
-          <li key={expert.expertid} className="py-2">
-            <p>Expert ID : {expert.expertid}</p>
-            <p>Name : {expert.name}</p>
-            <p>Role : {expert.role}</p>
-            <p>Expertise : {expert.expertise}</p>
-            <p>Contact Info : {expert.contactInfo}</p>
-          </li>
+          <div
+            key={expert.expertid}
+            className="p-4 border border-gray-300 rounded-lg"
+          >
+            <h3 className="text-lg font-medium mb-2">{expert.name}</h3>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Expert ID:</span> {expert.expertid}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Role:</span> {expert.role}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Expertise:</span> {expert.expertise}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Contact Info:</span> {expert.contactInfo}
+            </p>
+            <Link
+          to={`/expert/${expert.expertid}`}
+          className="text-blue-500 hover:underline"
+        >
+          Details
+        </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

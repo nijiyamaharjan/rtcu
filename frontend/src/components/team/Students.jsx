@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Students = () => {
   const [students, setStudents] = useState([]);
@@ -16,18 +17,36 @@ export const Students = () => {
   }, []);
 
   return (
-    <div>
-      <p className="text-2xl py-4">Students</p>
-      <ul className="flex">
+    <div id="students" className="px-4">
+      <p className="text-2xl font-semibold py-4">Students</p>
+      <Link to={"/add-student"} className="text-blue-500">Add Student</Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {students.map((student) => (
-          <li key={student.studentid} className="py-2">
-            <p>Student ID : {student.studentid}</p>
-            <p>Name : {student.name}</p>
-            <p>Expertise : {student.expertise}</p>
-            <p>Contact Info : {student.contactInfo}</p>
-          </li>
+          <div
+            key={student.studentid}
+            className="p-4 border border-gray-300 rounded-lg"
+          >
+            <h3 className="text-lg font-medium mb-2">{student.name}</h3>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Student ID:</span> {student.studentid}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Expertise:</span> {student.expertise}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Contact Info:</span> {student.contactInfo}
+            </p>
+            <Link
+          to={`/student/${student.studentid}`}
+          className="text-blue-500 hover:underline"
+        >
+          Details
+        </Link>
+          </div>
         ))}
-      </ul>
+
+      </div>
     </div>
+
   );
 };

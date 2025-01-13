@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom";
 
 export const Trainings = () => {
   const [trainings, setTrainings] = useState([])
@@ -15,18 +16,35 @@ export const Trainings = () => {
     fetchTrainings()
   }, [])
   return (
-    <div>
-      <p className="text-2xl py-4">Trainings</p>
-      <ul className="flex">
-        {trainings.map((training) => (
-          <li key={training.trainingid} className="py-2">
-              <p>Training ID : {training.trainingid}</p>
-              <p>Title : {training.title}</p>
-              <p>Start Date : {training.startdate}</p>
-              <p>End Date : {training.enddate}</p>
-          </li>
+    <div id="trainings" className="px-4">
+  <p className="text-2xl font-semibold py-4">Trainings</p>
+  <Link to={"/add-training"} className="text-blue-500">Add Training</Link>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {trainings.map((training) => (
+      <div
+        key={training.trainingid}
+        className="p-4 border border-gray-300 rounded-lg"
+      >
+            <h3 className="text-lg font-medium mb-2">{training.title}</h3>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Training ID:</span> {training.trainingid}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Start Date:</span> {training.startdate}
+            </p>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">End Date:</span> {training.enddate}
+            </p>
+            <Link
+          to={`/training/${training.trainingid}`}
+          className="text-blue-500 hover:underline"
+        >
+          Details
+        </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
+
   )
 }
