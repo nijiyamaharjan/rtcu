@@ -25,14 +25,22 @@ const createProject = async (req, res) => {
     } = req.body;
 
     try {
+        // const query = `
+        //     INSERT INTO Project (
+        //         projectID, title, description, type, startDate, endDate, status, budget, fundingOrgID, outsourcingOrgID
+        //     ) VALUES (
+        //         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+        //     )
+        //     RETURNING *;
+        // `;
         const query = `
-            INSERT INTO Project (
-                projectID, title, description, type, startDate, endDate, status, budget, fundingOrgID, outsourcingOrgID
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-            )
-            RETURNING *;
-        `;
+        INSERT INTO Project (
+            projectID, title, description, type, startDate, endDate, status, budget
+        ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8
+        )
+        RETURNING *;
+    `;
 
         const values = [
             projectID,
@@ -43,8 +51,6 @@ const createProject = async (req, res) => {
             endDate,
             status,
             budget,
-            fundingOrgID,
-            outsourcingOrgID,
         ];
 
         const result = await pool.query(query, values);

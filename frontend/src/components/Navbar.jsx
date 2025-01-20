@@ -3,29 +3,44 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export const Navbar = () => {
   return (
-    <div className='px-10'>
-      <ul className="flex gap-10">
-        <li>
-          <RouterLink to="/">
+    <nav className="bg-white shadow-md px-10 py-4">
+      <ul className="flex gap-8 text-gray-700">
+        <li className="hover:text-blue-500">
+          <RouterLink to="/" className="font-medium">
             Home
           </RouterLink>
         </li>
-        <li>
-          <Link to="projects">
+        <li className="hover:text-blue-500">
+          <Link 
+            to="projects" 
+            smooth={true} 
+            duration={500} 
+            className="cursor-pointer font-medium"
+          >
             Projects
           </Link>
         </li>
-        <li>
-          <Link to="trainings">
+        <li className="hover:text-blue-500">
+          <Link 
+            to="trainings" 
+            smooth={true} 
+            duration={500} 
+            className="cursor-pointer font-medium"
+          >
             Trainings
           </Link>
         </li>
-        <li>
-          <Link to="team">
+        <li className="hover:text-blue-500">
+          <Link 
+            to="team" 
+            smooth={true} 
+            duration={500} 
+            className="cursor-pointer font-medium"
+          >
             Team
           </Link>
         </li>
       </ul>
-    </div>
-  )
-}
+    </nav>
+  );
+};
