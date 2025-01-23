@@ -1,5 +1,6 @@
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Sidebar } from './components/Navbar';
 import { Home } from './components/Home';
-import { Navbar } from './components/Navbar';
 import { ProjectDetail } from './components/details/ProjectDetail';
 import { AddFaculty } from './components/add/AddFaculty';
 import { AddStudent } from './components/add/AddStudent';
@@ -7,12 +8,14 @@ import { AddOrganization } from './components/add/AddOrganization';
 import { AddExpert } from './components/add/AddExpert';
 import { AddProject } from './components/add/AddProject';
 import { AddTraining } from './components/add/AddTraining';
-import { TrainingDetail } from './components/details/TrainingDetail';  
-import { FacultyDetail } from './components/details/FacultyDetail'; 
-import { ExpertDetail } from './components/details/ExpertDetail';  
-import { StudentDetail } from './components/details/StudentDetail';  
-import { OrganizationDetail } from './components/details/OrganizationDetail'; 
+import { TrainingDetail } from './components/details/TrainingDetail';
+import { FacultyDetail } from './components/details/FacultyDetail';
+import { ExpertDetail } from './components/details/ExpertDetail';
+import { StudentDetail } from './components/details/StudentDetail';
+import { OrganizationDetail } from './components/details/OrganizationDetail';
+import LoginPage from './components/Login';
 
+// Routes array
 const routes = [
   { path: '/', element: <Home /> },
   { path: '/project/:id', element: <ProjectDetail /> },
@@ -26,20 +29,39 @@ const routes = [
   { path: '/add-student', element: <AddStudent /> },
   { path: '/add-organization', element: <AddOrganization /> },
   { path: '/add-project', element: <AddProject /> },
-  { path: '/add-training', element: <AddTraining /> }
+  { path: '/add-training', element: <AddTraining /> },
+  { path: '/login', element: <LoginPage/> },
 ];
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+function AppContent() {
+  const location = useLocation();
+
+  // Define paths where the Sidebar should be hidden
+  const hideSidebarRoutes = ['/login'];
+
+  return (
+    <div className="flex">
+      {/* Conditionally Render Sidebar */}
+      {!hideSidebarRoutes.includes(location.pathname) && <Sidebar />}
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 ${hideSidebarRoutes.includes(location.pathname) ? '' : 'p-6'} bg-gray-100 overflow-y-auto h-screen`}
+      >
+        <Routes>
+          {routes.map((route, index) => (
+            <Route key={index} path={route.path} element={route.element} />
+          ))}
+        </Routes>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        {routes.map((route, index) => (
-          <Route key={index} path={route.path} element={route.element} />
-        ))}
-      </Routes>
+      <AppContent />
     </BrowserRouter>
   );
 }

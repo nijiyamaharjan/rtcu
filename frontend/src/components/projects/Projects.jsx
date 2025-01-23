@@ -1,51 +1,84 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 export const Projects = () => {
   const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const response = await fetch("http://localhost:5000/project/all");
-      const json = await response.json();
-      if (response.ok) {
+      try {
+        const response = await fetch("http://localhost:5000/project/all");
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        const json = await response.json();
         setProjects(json);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProjects();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-900">Error Loading Projects</h3>
+          <p className="mt-2 text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div id="projects" className="px-6 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-3xl font-bold text-gray-800">Projects</p>
+    <section className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Projects</h1>
         <Link
           to="/add-project"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Add Project
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((project) => (
-          <div
-            key={project.projectid}
-            className="p-6 border border-gray-200 shadow-md rounded-lg hover:shadow-lg transition-shadow"
-          >
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              {project.title}
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">{project.description}</p>
-            <Link
-              to={`/project/${project.projectid}`}
-              className="text-blue-500 font-medium hover:underline"
+      {projects.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600">No projects found. Create your first project to get started.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <div 
+              key={project.projectid}
+              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg transition-shadow"
             >
-              View Details
-            </Link>
-          </div>
-        ))}
-      </div>
-    </div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{project.title}</h2>
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3">{project.description}</p>
+              <Link
+                to={`/project/${project.projectid}`}
+                className="text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                View Details →
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 };
