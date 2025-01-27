@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const expertiseOptions = [
+  'Web Development',
+  'Machine Learning',
+  'Data Science',
+  'Cybersecurity',
+  'Blockchain',
+  'DevOps',
+  'Cloud Computing',
+  'Game Development',
+  'UI/UX Design',
+  'Mobile Development',
+];
+
 export const StudentDetail = () => {
   const { id } = useParams(); // Get the studentID from the route parameter
   const navigate = useNavigate(); // To navigate after delete or update
@@ -29,7 +42,7 @@ export const StudentDetail = () => {
     };
 
     fetchStudentData();
-  }, [id]); // Fetch data when the id changes
+  }, [id]);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -95,6 +108,7 @@ export const StudentDetail = () => {
       {/* Update Form */}
       <h3 className="text-xl font-semibold mt-8 mb-4">Update Student</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
+        {/* Name */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
@@ -109,20 +123,30 @@ export const StudentDetail = () => {
           />
         </div>
 
+        {/* Expertise Dropdown */}
         <div>
           <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">
             Expertise
           </label>
-          <input
-            type="text"
+          <select
             id="expertise"
             name="expertise"
             value={updatedStudent.expertise}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
+          >
+            <option value="" disabled>
+              Select Expertise
+            </option>
+            {expertiseOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
+        {/* Contact Info */}
         <div>
           <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
             Contact Info
@@ -137,6 +161,7 @@ export const StudentDetail = () => {
           />
         </div>
 
+        {/* Update Button */}
         <div>
           <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white rounded-md">
             Update Student

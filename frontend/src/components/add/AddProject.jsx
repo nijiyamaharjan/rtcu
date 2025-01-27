@@ -19,203 +19,143 @@ export const AddProject = () => {
 
   useEffect(() => {
     const fetchOrganizations = async () => {
-      const response = await fetch('http://localhost:5000/organization/all');
-      const data = await response.json();
-      setOrganizations(data);
+      try {
+        const response = await fetch('http://localhost:5000/organization/all');
+        const data = await response.json();
+        setOrganizations(data);
+      } catch (error) {
+        console.error('Failed to fetch organizations:', error);
+      }
     };
-
     fetchOrganizations();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProject({
-      ...project,
-      [name]: value
-    });
+    setProject((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/project/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(project)
-    });
-
-    if (response.ok) {
-      alert('Project added successfully');
-      setProject({
-        projectID: '',
-        title: '',
-        description: '',
-        type: '',
-        startDate: '',
-        endDate: '',
-        status: '',
-        budget: '',
-        fundingOrgID: '',
-        outsourcingOrgID: ''
+    try {
+      const response = await fetch('http://localhost:5000/project/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(project)
       });
-      navigate('/');
-    } else {
-      alert('Error adding project');
+      if (response.ok) {
+        alert('Project added successfully');
+        setProject({
+          projectID: '',
+          title: '',
+          description: '',
+          type: 'research',
+          startDate: '',
+          endDate: '',
+          status: 'ongoing',
+          budget: '',
+          fundingOrgID: '',
+          outsourcingOrgID: ''
+        });
+        navigate('/');
+      } else {
+        alert('Error adding project');
+      }
+    } catch (error) {
+      alert('Failed to submit the project. Please try again.');
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6">Add Project</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="projectID" className="block text-sm font-medium text-gray-700">Project ID</label>
-          <input
-            type="text"
-            id="projectID"
-            name="projectID"
-            value={project.projectID}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={project.title}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={project.description}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type</label>
-          <select
-            id="type"
-            name="type"
-            value={project.type}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          >
-            <option value="research">research</option>
-            <option value="consultancy">consultancy</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            value={project.startDate}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
-          <input
-            type="date"
-            id="endDate"
-            name="endDate"
-            value={project.endDate}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
-          <select
-            id="status"
-            name="status"
-            value={project.status}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          >
-            <option value="ongoing">ongoing</option>
-            <option value="completed">completed</option>
-          </select>
-
-        </div>
-
-        <div>
-          <label htmlFor="budget" className="block text-sm font-medium text-gray-700">Budget</label>
-          <input
-            type="text"
-            id="budget"
-            name="budget"
-            value={project.budget}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="fundingOrgID" className="block text-sm font-medium text-gray-700">Funding Organization</label>
-          <select
-            id="fundingOrgID"
-            name="fundingOrgID"
-            value={project.fundingOrgID}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          >
-            <option value="">Select Funding Organization</option>
-            {organizations.map((org) => (
-              <option key={org.organizationID} value={org.organizationID}>
-                {org.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="outsourcingOrgID" className="block text-sm font-medium text-gray-700">Outsourcing Organization</label>
-          <select
-            id="outsourcingOrgID"
-            name="outsourcingOrgID"
-            value={project.outsourcingOrgID}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          >
-            <option value="">Select Outsourcing Organization</option>
-            {organizations.map((org) => (
-              <option key={org.organizationID} value={org.organizationID}>
-                {org.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white rounded-md">
-            Add Project
-          </button>
-        </div>
+    <div className="max-w-3xl mx-auto p-8 bg-gray-50 rounded shadow-md">
+      <h1 className="text-xl font-bold mb-4">Add New Project</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {[
+          { label: 'Project ID', name: 'projectID', type: 'text', required: true },
+          { label: 'Title', name: 'title', type: 'text', required: true },
+          { label: 'Description', name: 'description', type: 'textarea' },
+          { label: 'Budget', name: 'budget', type: 'text' },
+          { label: 'Start Date', name: 'startDate', type: 'date' },
+          { label: 'End Date', name: 'endDate', type: 'date' }
+        ].map((field) => (
+          <div key={field.name}>
+            <label htmlFor={field.name} className="block text-sm font-medium">
+              {field.label}
+            </label>
+            {field.type === 'textarea' ? (
+              <textarea
+                id={field.name}
+                name={field.name}
+                value={project[field.name]}
+                onChange={handleChange}
+                className="w-full mt-1 border rounded p-2"
+              />
+            ) : (
+              <input
+                type={field.type}
+                id={field.name}
+                name={field.name}
+                value={project[field.name]}
+                onChange={handleChange}
+                className="w-full mt-1 border rounded p-2"
+                required={field.required}
+              />
+            )}
+          </div>
+        ))}
+        {[
+          { label: 'Type', name: 'type', options: ['research', 'consultancy'] },
+          { label: 'Status', name: 'status', options: ['ongoing', 'completed'] },
+          {
+            label: 'Funding Organization',
+            name: 'fundingOrgID',
+            options: organizations.map((org) => ({
+              value: org.organizationID,
+              label: org.name
+            }))
+          },
+          {
+            label: 'Outsourcing Organization',
+            name: 'outsourcingOrgID',
+            options: organizations.map((org) => ({
+              value: org.organizationID,
+              label: org.name
+            }))
+          }
+        ].map((field) => (
+          <div key={field.name}>
+            <label htmlFor={field.name} className="block text-sm font-medium">
+              {field.label}
+            </label>
+            <select
+              id={field.name}
+              name={field.name}
+              value={project[field.name]}
+              onChange={handleChange}
+              className="w-full mt-1 border rounded p-2"
+              required
+            >
+              <option value="">Select {field.label}</option>
+              {field.options.map((option, index) =>
+                typeof option === 'string' ? (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ) : (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        ))}
+        <button
+          type="submit"
+          className="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700"
+        >
+          Submit Project
+        </button>
       </form>
     </div>
   );
