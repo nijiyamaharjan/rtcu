@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const AddFaculty = () => {
-    const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [faculty, setFaculty] = useState({
     facultyID: '',
     name: '',
@@ -39,7 +39,7 @@ export const AddFaculty = () => {
         expertise: '',
         contactInfo: ''
       });
-      navigate("/")
+      navigate("/");
     } else {
       alert('Error adding faculty');
     }
@@ -75,28 +75,42 @@ export const AddFaculty = () => {
           />
         </div>
 
+        {/* Dropdown for Role */}
         <div>
           <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
-          <input
-            type="text"
+          <select
             id="role"
             name="role"
             value={faculty.role}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
+          >
+            <option value="">Select Role</option>
+            <option value="Professor">Professor</option>
+            <option value="Assistant Professor">Assistant Professor</option>
+            <option value="Lecturer">Lecturer</option>
+            <option value="Visiting Faculty">Visiting Faculty</option>
+          </select>
         </div>
 
+        {/* Dropdown for Expertise */}
         <div>
           <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">Expertise</label>
-          <input
-            type="text"
+          <select
             id="expertise"
             name="expertise"
             value={faculty.expertise}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
+          >
+            <option value="">Select Expertise</option>
+            <option value="Machine Learning">Machine Learning</option>
+            <option value="Software Engineering">Software Engineering</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Networking">Networking</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            {/* Add more expertise options as needed */}
+          </select>
         </div>
 
         <div>

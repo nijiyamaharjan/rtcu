@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const expertiseOptions = [
+  'Web Development',
+  'Machine Learning',
+  'Data Science',
+  'Cybersecurity',
+  'Blockchain',
+  'DevOps',
+  'Cloud Computing',
+  'Game Development',
+  'UI/UX Design',
+  'Mobile Development',
+];
+
 export const ExpertDetail = () => {
   const { id } = useParams(); // Get the expertID from the route parameter
   const navigate = useNavigate(); // For navigation after update or delete
@@ -11,7 +24,7 @@ export const ExpertDetail = () => {
     name: '',
     role: '',
     expertise: '',
-    contactInfo: ''
+    contactInfo: '',
   });
 
   useEffect(() => {
@@ -25,10 +38,10 @@ export const ExpertDetail = () => {
           name: data.name,
           role: data.role,
           expertise: data.expertise,
-          contactInfo: data.contactInfo
+          contactInfo: data.contactInfo,
         });
       } else {
-        console.error("Error fetching expert data");
+        console.error('Error fetching expert data');
       }
     };
 
@@ -39,7 +52,7 @@ export const ExpertDetail = () => {
     const { name, value } = e.target;
     setUpdatedExpert({
       ...updatedExpert,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -49,16 +62,16 @@ export const ExpertDetail = () => {
     const response = await fetch(`http://localhost:5000/expert/${id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedExpert)
+      body: JSON.stringify(updatedExpert),
     });
 
     if (response.ok) {
       alert('Expert updated successfully');
       setExpert({
         ...expert,
-        ...updatedExpert
+        ...updatedExpert,
       });
     } else {
       alert('Error updating expert');
@@ -67,7 +80,7 @@ export const ExpertDetail = () => {
 
   const handleDelete = async () => {
     const response = await fetch(`http://localhost:5000/expert/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
 
     if (response.ok) {
@@ -109,7 +122,9 @@ export const ExpertDetail = () => {
       <h3 className="text-xl font-semibold mt-8 mb-4">Update Expert</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             id="name"
@@ -121,7 +136,9 @@ export const ExpertDetail = () => {
         </div>
 
         <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
+          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+            Role
+          </label>
           <input
             type="text"
             id="role"
@@ -133,19 +150,31 @@ export const ExpertDetail = () => {
         </div>
 
         <div>
-          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">Expertise</label>
-          <input
-            type="text"
+          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">
+            Expertise
+          </label>
+          <select
             id="expertise"
             name="expertise"
             value={updatedExpert.expertise}
             onChange={handleUpdateChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
+          >
+            <option value="" disabled>
+              Select expertise
+            </option>
+            {expertiseOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
-          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">Contact Info</label>
+          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
+            Contact Info
+          </label>
           <input
             type="text"
             id="contactInfo"

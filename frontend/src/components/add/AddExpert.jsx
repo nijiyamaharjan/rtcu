@@ -75,16 +75,22 @@ export const AddExpert = () => {
           />
         </div>
 
+        {/* Dropdown for Role */}
         <div>
           <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
-          <input
-            type="text"
+          <select
             id="role"
             name="role"
             value={expert.role}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
+          >
+            <option value="">Select Role</option>
+            <option value="Developer">Developer</option>
+            <option value="Data Scientist">Data Scientist</option>
+            <option value="Product Manager">Product Manager</option>
+            <option value="Researcher">Researcher</option>
+          </select>
         </div>
 
         <div>
