@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useAuth from './../../hooks/useAuth';
 
 export const OrganizationDetail = () => {
   const { id } = useParams(); // Get the organizationID from the route parameter
   const navigate = useNavigate(); // For navigation after update or delete
   const [organization, setOrganization] = useState(null);
+  const user = useAuth()
 
   // Handle input changes for update form
   const [updatedOrganization, setUpdatedOrganization] = useState({
@@ -95,8 +97,10 @@ export const OrganizationDetail = () => {
         </span>
       </div>
 
-      {/* Update Form */}
-      <h3 className="text-xl font-semibold mt-8 mb-4">Update Organization</h3>
+{user && (
+  <>
+   {/* Update Form */}
+   <h3 className="text-xl font-semibold mt-8 mb-4">Update Organization</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
@@ -128,7 +132,6 @@ export const OrganizationDetail = () => {
           </button>
         </div>
       </form>
-
       {/* Delete Button */}
       <div className="mt-6">
         <button
@@ -138,6 +141,11 @@ export const OrganizationDetail = () => {
           Delete Organization
         </button>
       </div>
+  </>
+)}
+     
+
+      
     </div>
   );
 };

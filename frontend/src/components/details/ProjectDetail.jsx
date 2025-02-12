@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { TeamMembers } from "../projects/TeamMembers";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import useAuth from "../../hooks/useAuth";
 
 export const ProjectDetail = () => {
   const { id: projectID } = useParams();
@@ -15,6 +16,7 @@ export const ProjectDetail = () => {
   });
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isTeamMembersExpanded, setIsTeamMembersExpanded] = useState(false);
+  const user = useAuth()
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -112,13 +114,15 @@ export const ProjectDetail = () => {
         </div>
 
         <div className="flex gap-4 pt-4">
-          <button
+          {user && (
+            <button
             onClick={() => setIsUpdateModalOpen(true)}
             className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
             title="Update Project"
           >
             <Pencil size={20} />
           </button>
+          )}         
           <button
             onClick={() => setIsTeamMembersExpanded(!isTeamMembersExpanded)}
             className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
@@ -126,13 +130,16 @@ export const ProjectDetail = () => {
           >
             <Users size={20} />
           </button>
-          <button
+          {user && (
+            <button
             onClick={handleDelete}
             className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
             title="Delete Project"
           >
             <Trash2 size={20} />
           </button>
+          )}
+          
         </div>
 
         {isTeamMembersExpanded && (
@@ -142,7 +149,7 @@ export const ProjectDetail = () => {
           </section>
         )}
 
-        {isUpdateModalOpen && (
+        {isUpdateModalOpen && user && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">

@@ -14,6 +14,9 @@ import { ExpertDetail } from './components/details/ExpertDetail';
 import { StudentDetail } from './components/details/StudentDetail';
 import { OrganizationDetail } from './components/details/OrganizationDetail';
 import LoginPage from './components/Login';
+import { Projects } from './components/projects/Projects';
+import { Trainings } from './components/trainings/Trainings';
+import { Team } from './components/team/Team';
 
 // Routes array
 const routes = [
@@ -31,6 +34,9 @@ const routes = [
   { path: '/add-project', element: <AddProject /> },
   { path: '/add-training', element: <AddTraining /> },
   { path: '/login', element: <LoginPage/> },
+  { path: '/projects', element: <Projects/> },
+  { path: '/trainings', element: <Trainings/> },
+  { path: '/team', element: <Team/> },
 ];
 
 function AppContent() {

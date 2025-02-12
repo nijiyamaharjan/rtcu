@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 const expertiseOptions = [
   'Web Development',
@@ -26,6 +27,7 @@ export const ExpertDetail = () => {
     expertise: '',
     contactInfo: '',
   });
+  const user = useAuth()
 
   useEffect(() => {
     // Fetch the expert data based on expertID
@@ -118,8 +120,10 @@ export const ExpertDetail = () => {
         </span>
       </div>
 
-      {/* Update Form */}
-      <h3 className="text-xl font-semibold mt-8 mb-4">Update Expert</h3>
+{user && (
+  <>
+  {/* Update Form */}
+  <h3 className="text-xl font-semibold mt-8 mb-4">Update Expert</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -201,6 +205,9 @@ export const ExpertDetail = () => {
           Delete Expert
         </button>
       </div>
+  </>
+)}
+      
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 const expertiseOptions = [
   'Web Development',
@@ -23,6 +24,7 @@ export const StudentDetail = () => {
     expertise: '',
     contactInfo: '',
   });
+  const user = useAuth()
 
   useEffect(() => {
     // Fetch the student data based on studentID
@@ -105,8 +107,10 @@ export const StudentDetail = () => {
         </span>
       </div>
 
-      {/* Update Form */}
-      <h3 className="text-xl font-semibold mt-8 mb-4">Update Student</h3>
+{user && (
+  <>
+  {/* Update Form */}
+  <h3 className="text-xl font-semibold mt-8 mb-4">Update Student</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
         {/* Name */}
         <div>
@@ -178,6 +182,9 @@ export const StudentDetail = () => {
           Delete Student
         </button>
       </div>
+  </>
+)}
+      
     </div>
   );
 };

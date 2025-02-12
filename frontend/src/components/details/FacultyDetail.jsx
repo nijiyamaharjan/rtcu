@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 const expertiseOptions = [
   'Web Development',
@@ -18,6 +19,7 @@ export const FacultyDetail = () => {
   const { id } = useParams(); // Get the facultyID from the route parameter
   const navigate = useNavigate(); // For navigation after update or delete
   const [faculty, setFaculty] = useState(null);
+  const user = useAuth()
 
   // Handle input changes for update form
   const [updatedFaculty, setUpdatedFaculty] = useState({
@@ -122,8 +124,10 @@ export const FacultyDetail = () => {
         <span><strong>Contact Info:</strong> {faculty.contactInfo}</span>
       </div>
 
-      {/* Update Form */}
-      <h3 className="text-xl font-semibold text-gray-800 mt-8 mb-4">Update Faculty</h3>
+{user && (
+  <>
+  {/* Update Form */}
+  <h3 className="text-xl font-semibold text-gray-800 mt-8 mb-4">Update Faculty</h3>
       <form onSubmit={handleUpdateSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
@@ -195,6 +199,9 @@ export const FacultyDetail = () => {
           Delete Faculty
         </button>
       </div>
+  </>
+)}
+      
     </div>
   );
 };

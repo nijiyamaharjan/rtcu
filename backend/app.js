@@ -7,7 +7,7 @@ const expertRoutes = require('./routes/expertRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const facultyRoutes = require('./routes/facultyRoutes');
 const teamMembersRoutes = require('./routes/teamMembersRoutes');
-
+const user = require('./routes/user')
 const app = express();
 const cors = require('cors')
 
@@ -23,7 +23,7 @@ app.use('/organization', organizationRoutes);
 app.use('/expert', expertRoutes);
 app.use('/student', studentRoutes);
 app.use('/faculty', facultyRoutes);
-
+app.use('/auth', user)
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
