@@ -7,7 +7,7 @@ export const Faculty = () => {
   const [faculty, setFaculty] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const user = useAuth()
+  const user = useAuth();
 
   useEffect(() => {
     const fetchFaculty = async () => {
@@ -17,6 +17,7 @@ export const Faculty = () => {
           throw new Error("Failed to fetch faculty members");
         }
         const json = await response.json();
+        console.log(json); // Check the structure of the data
         setFaculty(json);
       } catch (err) {
         setError(err.message);
@@ -53,13 +54,12 @@ export const Faculty = () => {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Faculty</h1>
         {user && (
           <Link
-          to="/add-faculty"
-          className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Add Faculty
-        </Link>
+            to="/add-faculty"
+            className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Add Faculty
+          </Link>
         )}
-        
       </div>
 
       {faculty.length === 0 ? (
@@ -78,13 +78,13 @@ export const Faculty = () => {
                 <span className="font-semibold">Faculty ID:</span> {person.facultyid}
               </p>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-semibold">Role:</span> {person.role}
+                <span className="font-semibold">Role:</span> {person.rolename}
               </p>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-semibold">Expertise:</span> {person.expertise}
+                <span className="font-semibold">Expertise:</span> {person.expertisename}
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                <span className="font-semibold">Contact Info:</span> {person.contactInfo}
+                <span className="font-semibold">Contact Info:</span> {person.contactinfo}
               </p>
               <Link
                 to={`/faculty/${person.facultyid}`}

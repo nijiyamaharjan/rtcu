@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const AddFaculty = () => {
@@ -6,10 +6,40 @@ export const AddFaculty = () => {
   const [faculty, setFaculty] = useState({
     facultyID: '',
     name: '',
-    role: '',
-    expertise: '',
+    roleid: '', // Store roleid instead of rolename
+    expertiseid: '', // Store expertiseid instead of expertisename
     contactInfo: ''
   });
+
+  const [roles, setRoles] = useState([]);
+  const [expertiseList, setExpertiseList] = useState([]);
+
+  // Fetch roles from the server
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/role');
+      const data = await response.json();
+      setRoles(data);
+    } catch (err) {
+      console.error('Error fetching roles', err);
+    }
+  };
+
+  // Fetch expertise from the server
+  const fetchExpertise = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/expertise');
+      const data = await response.json();
+      setExpertiseList(data);
+    } catch (err) {
+      console.error('Error fetching expertise', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles();
+    fetchExpertise();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,13 +65,55 @@ export const AddFaculty = () => {
       setFaculty({
         facultyID: '',
         name: '',
-        role: '',
-        expertise: '',
+        roleid: '', // Reset roleid
+        expertiseid: '', // Reset expertiseid
         contactInfo: ''
       });
-      navigate("/");
+      navigate('/');
     } else {
       alert('Error adding faculty');
+    }
+  };
+
+  // Add new role
+  const handleAddRole = async () => {
+    const newRole = prompt('Enter new role name');
+    if (newRole) {
+      const response = await fetch('http://localhost:5000/role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rolename: newRole })
+      });
+
+      if (response.ok) {
+        const addedRole = await response.json();
+        setRoles((prevRoles) => [...prevRoles, addedRole]);
+      } else {
+        alert('Failed to add role');
+      }
+    }
+  };
+
+  // Add new expertise
+  const handleAddExpertise = async () => {
+    const newExpertise = prompt('Enter new expertise name');
+    if (newExpertise) {
+      const response = await fetch('http://localhost:5000/expertise', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ expertisename: newExpertise })
+      });
+
+      if (response.ok) {
+        const addedExpertise = await response.json();
+        setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
+      } else {
+        alert('Failed to add expertise');
+      }
     }
   };
 
@@ -50,7 +122,9 @@ export const AddFaculty = () => {
       <h2 className="text-2xl font-semibold mb-6">Add Faculty</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="facultyID" className="block text-sm font-medium text-gray-700">Faculty ID</label>
+          <label htmlFor="facultyID" className="block text-sm font-medium text-gray-700">
+            Faculty ID
+          </label>
           <input
             type="text"
             id="facultyID"
@@ -63,7 +137,9 @@ export const AddFaculty = () => {
         </div>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             id="name"
@@ -77,44 +153,64 @@ export const AddFaculty = () => {
 
         {/* Dropdown for Role */}
         <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
+          <label htmlFor="roleid" className="block text-sm font-medium text-gray-700">
+            Role
+          </label>
           <select
-            id="role"
-            name="role"
-            value={faculty.role}
+            id="roleid"
+            name="roleid"
+            value={faculty.roleid}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
           >
             <option value="">Select Role</option>
-            <option value="Professor">Professor</option>
-            <option value="Assistant Professor">Assistant Professor</option>
-            <option value="Lecturer">Lecturer</option>
-            <option value="Visiting Faculty">Visiting Faculty</option>
+            {roles.map((role) => (
+              <option key={role.roleid} value={role.roleid}>
+                {role.rolename}
+              </option>
+            ))}
           </select>
+          <button
+            type="button"
+            onClick={handleAddRole}
+            className="mt-2 text-blue-600"
+          >
+            Add New Role
+          </button>
         </div>
 
         {/* Dropdown for Expertise */}
         <div>
-          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">Expertise</label>
+          <label htmlFor="expertiseid" className="block text-sm font-medium text-gray-700">
+            Expertise
+          </label>
           <select
-            id="expertise"
-            name="expertise"
-            value={faculty.expertise}
+            id="expertiseid"
+            name="expertiseid"
+            value={faculty.expertiseid}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
           >
             <option value="">Select Expertise</option>
-            <option value="Machine Learning">Machine Learning</option>
-            <option value="Software Engineering">Software Engineering</option>
-            <option value="Data Science">Data Science</option>
-            <option value="Networking">Networking</option>
-            <option value="Cybersecurity">Cybersecurity</option>
-            {/* Add more expertise options as needed */}
+            {expertiseList.map((expertise) => (
+              <option key={expertise.expertiseid} value={expertise.expertiseid}>
+                {expertise.expertisename}
+              </option>
+            ))}
           </select>
+          <button
+            type="button"
+            onClick={handleAddExpertise}
+            className="mt-2 text-blue-600"
+          >
+            Add New Expertise
+          </button>
         </div>
 
         <div>
-          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">Contact Info</label>
+          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
+            Contact Info
+          </label>
           <input
             type="text"
             id="contactInfo"

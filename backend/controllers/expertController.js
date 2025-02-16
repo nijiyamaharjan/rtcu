@@ -1,8 +1,14 @@
 const pool = require('../db'); // Adjust the path as necessary
 
+// Get all experts with their roleName and expertiseName
 const getAllExperts = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM Expert');
+        const result = await pool.query(`
+            SELECT e.*, r.roleName, ex.expertiseName
+            FROM Expert e
+            JOIN Role r ON e.roleID = r.roleID
+            JOIN Expertise ex ON e.expertiseID = ex.expertiseID
+        `);
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
@@ -10,15 +16,23 @@ const getAllExperts = async (req, res) => {
     }
 }
 
+// Create a new expert
 const createExpert = async (req, res) => {
-    const { expertID, name, role, expertise, contactInfo } = req.body;
+    const { expertID, name, roleid, expertiseid, contactInfo } = req.body;
+
+    // Validate that roleid and expertiseid are valid integers
+    if (!roleid || !expertiseid) {
+        return res.status(400).json({ error: 'Role ID and Expertise ID are required.' });
+    }
+
     try {
+        // Insert new expert using the roleid and expertiseid provided
         const query = `
-            INSERT INTO Expert (expertID, name, role, expertise, contactInfo)
+            INSERT INTO Expert (expertID, name, roleID, expertiseID, contactInfo)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
-        const values = [expertID, name, role, expertise, contactInfo];
+        const values = [expertID, name, roleid, expertiseid, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -27,10 +41,17 @@ const createExpert = async (req, res) => {
     }
 }
 
+// Get a specific expert by expertID
 const getExpert = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM Expert WHERE expertID = $1', [id]);
+        const result = await pool.query(`
+            SELECT e.*, r.roleName, ex.expertiseName
+            FROM Expert e
+            JOIN Role r ON e.roleID = r.roleID
+            JOIN Expertise ex ON e.expertiseID = ex.expertiseID
+            WHERE expertID = $1
+        `, [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Expert not found.' });
         }
@@ -41,6 +62,7 @@ const getExpert = async (req, res) => {
     }
 };
 
+// Delete an expert by expertID
 const deleteExpert = async (req, res) => {
     const { id } = req.params;
     try {
@@ -55,31 +77,35 @@ const deleteExpert = async (req, res) => {
     }
 };
 
+// Update an expert's information
 const updateExpert = async (req, res) => {
-    const { id } = req.params; 
-    const { name, role, expertise, contactInfo } = req.body; 
+    const { id } = req.params;
+    const { name, roleid, expertiseid, contactInfo } = req.body;
 
-    if (!name && !role && !expertise && !contactInfo) {
-        return res.status(400).json({ error: 'At least one field (name, role, expertise, contactInfo) is required to update.' });
+    if (!roleid && !expertiseid && !name && !contactInfo) {
+        return res.status(400).json({ error: 'At least one field (role, expertise, name, or contactInfo) is required to update.' });
     }
 
     try {
-        // Dynamic query construction for updating only provided fields
+        // Collect the updates
         const updates = [];
         const values = [];
+
+        if (roleid) {
+            updates.push(`roleID = $${updates.length + 1}`);
+            values.push(roleid);
+        }
+
+        if (expertiseid) {
+            updates.push(`expertiseID = $${updates.length + 1}`);
+            values.push(expertiseid);
+        }
 
         if (name) {
             updates.push(`name = $${updates.length + 1}`);
             values.push(name);
         }
-        if (role) {
-            updates.push(`role = $${updates.length + 1}`);
-            values.push(role);
-        }
-        if (expertise) {
-            updates.push(`expertise = $${updates.length + 1}`);
-            values.push(expertise);
-        }
+
         if (contactInfo) {
             updates.push(`contactInfo = $${updates.length + 1}`);
             values.push(contactInfo);

@@ -2,31 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
-const expertiseOptions = [
-  'Web Development',
-  'Machine Learning',
-  'Data Science',
-  'Cybersecurity',
-  'Blockchain',
-  'DevOps',
-  'Cloud Computing',
-  'Game Development',
-  'UI/UX Design',
-  'Mobile Development',
-];
-
 export const FacultyDetail = () => {
   const { id } = useParams(); // Get the facultyID from the route parameter
   const navigate = useNavigate(); // For navigation after update or delete
   const [faculty, setFaculty] = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [expertiseList, setExpertiseList] = useState([]);
   const user = useAuth()
 
   // Handle input changes for update form
   const [updatedFaculty, setUpdatedFaculty] = useState({
     name: '',
-    role: '',
-    expertise: '',
-    contactInfo: ''
+    roleid: '', // Use roleID instead of role name
+    expertiseid: '', // Use expertiseID instead of expertise name
+    contactInfo: '',
   });
 
   useEffect(() => {
@@ -39,9 +28,9 @@ export const FacultyDetail = () => {
           setFaculty(data);
           setUpdatedFaculty({
             name: data.name,
-            role: data.role,
-            expertise: data.expertise,
-            contactInfo: data.contactInfo
+            roleid: data.roleid, // Use roleID from the fetched data
+            expertiseid: data.expertiseid, // Use expertiseID from the fetched data
+            contactInfo: data.contactinfo,
           });
         } else {
           console.error("Error fetching faculty data");
@@ -51,7 +40,23 @@ export const FacultyDetail = () => {
       }
     };
 
+    // Fetch roles and expertise options
+    const fetchRolesAndExpertise = async () => {
+      const rolesResponse = await fetch('http://localhost:5000/role');
+      const expertiseResponse = await fetch('http://localhost:5000/expertise');
+
+      if (rolesResponse.ok && expertiseResponse.ok) {
+        const rolesData = await rolesResponse.json();
+        const expertiseData = await expertiseResponse.json();
+        setRoles(rolesData);
+        setExpertiseList(expertiseData);
+      } else {
+        console.error('Error fetching roles or expertise');
+      }
+    };
+
     fetchFacultyData();
+    fetchRolesAndExpertise();
   }, [id]); // Fetch data when the id changes
 
   const handleUpdateChange = (e) => {
@@ -65,26 +70,22 @@ export const FacultyDetail = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch(`http://localhost:5000/faculty/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedFaculty)
-      });
+    // Send the updated data with roleID and expertiseID
+    const response = await fetch(`http://localhost:5000/faculty/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedFaculty), // Send the updated expert object
+    });
 
-      if (response.ok) {
-        alert('Faculty updated successfully');
-        setFaculty({
-          ...faculty,
-          ...updatedFaculty
-        });
-      } else {
-        alert('Error updating faculty');
-      }
-    } catch (error) {
-      console.error("Update error: ", error);
+    if (response.ok) {
+      alert('Faculty updated successfully');
+      setExpert({
+        ...expert,
+        ...updatedExpert,
+      });
+    } else {
       alert('Error updating faculty');
     }
   };
@@ -107,7 +108,7 @@ export const FacultyDetail = () => {
     }
   };
 
-  if (!faculty) {
+  if (!faculty || !roles.length || !expertiseList.length) {
     return <div className="text-center text-gray-500">Loading...</div>; // Show loading if the data is not yet loaded
   }
 
@@ -119,9 +120,9 @@ export const FacultyDetail = () => {
       <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-600">
         <span><strong>Faculty ID:</strong> {faculty.facultyid}</span>
         <span><strong>Name:</strong> {faculty.name}</span>
-        <span><strong>Role:</strong> {faculty.role}</span>
-        <span><strong>Expertise:</strong> {faculty.expertise}</span>
-        <span><strong>Contact Info:</strong> {faculty.contactInfo}</span>
+        <span><strong>Role:</strong> {faculty.rolename}</span>
+        <span><strong>Expertise:</strong> {faculty.expertisename}</span>
+        <span><strong>Contact Info:</strong> {faculty.contactinfo}</span>
       </div>
 
 {user && (
@@ -142,34 +143,48 @@ export const FacultyDetail = () => {
         </div>
 
         <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
-          <input
-            type="text"
-            id="role"
-            name="role"
-            value={updatedFaculty.role}
-            onChange={handleUpdateChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
-          />
-        </div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                Role
+              </label>
+              <select
+                id="role"
+                name="roleid" // Use roleID instead of role
+                value={updatedFaculty.roleid} // Bind to roleID, not rolename
+                onChange={handleUpdateChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option value="" disabled>
+                  Select role
+                </option>
+                {roles.map((role) => (
+                  <option key={role.roleid} value={role.roleid}>
+                    {role.rolename}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div>
-          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">Expertise</label>
-          <select
-            id="expertise"
-            name="expertise"
-            value={updatedFaculty.expertise}
-            onChange={handleUpdateChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
-          >
-            <option value="" disabled>Select expertise</option>
-            {expertiseOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div>
+              <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">
+                Expertise
+              </label>
+              <select
+                id="expertise"
+                name="expertiseid" // Use expertiseID instead of expertise
+                value={updatedFaculty.expertiseid} // Bind to expertiseID, not expertisename
+                onChange={handleUpdateChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option value="" disabled>
+                  Select expertise
+                </option>
+                {expertiseList.map((expertise) => (
+                  <option key={expertise.expertiseid} value={expertise.expertiseid}>
+                    {expertise.expertisename}
+                  </option>
+                ))}
+              </select>
+            </div>
 
         <div>
           <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">Contact Info</label>

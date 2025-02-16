@@ -1,66 +1,88 @@
-const pool = require('../db'); // Adjust the path as necessary
+const pool = require("../db"); // Adjust the path as necessary
 
 const getAllStudents = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM Student');
+        const result =
+            await pool.query(`SELECT s.*, ex.expertiseName
+            FROM Student s
+            JOIN Expertise ex ON s.expertiseID = ex.expertiseID`);
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send("Server Error");
     }
-}
+};
 
 const createStudent = async (req, res) => {
-    const { studentID, name, expertise, contactInfo } = req.body;
+    const { studentID, name, expertiseid, contactInfo } = req.body;
+
+    if (!expertiseid) {
+        return res.status(400).json({ error: 'Expertise ID is required.' });
+    }
     try {
         const query = `
-            INSERT INTO Student (studentID, name, expertise, contactInfo)
+            INSERT INTO Student (studentID, name, expertiseID, contactInfo)
             VALUES ($1, $2, $3, $4)
             RETURNING *;
         `;
-        const values = [studentID, name, expertise, contactInfo];
+        const values = [studentID, name, expertiseid, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send("Server Error");
     }
-}
+};
 
 const getStudent = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM Student WHERE studentID = $1', [id]);
+        const result = await pool.query(`
+            SELECT s.*, ex.expertiseName
+            FROM Student s
+            JOIN Expertise ex ON s.expertiseID = ex.expertiseID
+            WHERE studentID = $1
+            `
+            ,
+            [id]
+        );
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Student not found.' });
+            return res.status(404).json({ error: "Student not found." });
         }
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send("Server Error");
     }
 };
 
 const deleteStudent = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('DELETE FROM Student WHERE studentID = $1 RETURNING *', [id]);
+        const result = await pool.query(
+            "DELETE FROM Student WHERE studentID = $1 RETURNING *",
+            [id]
+        );
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Student not found.' });
+            return res.status(404).json({ error: "Student not found." });
         }
-        res.json({ message: 'Student deleted successfully.' });
+        res.json({ message: "Student deleted successfully." });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send("Server Error");
     }
 };
 
 const updateStudent = async (req, res) => {
-    const { id } = req.params; 
-    const { name, expertise, contactInfo } = req.body; 
+    const { id } = req.params;
+    const { name, expertiseid, contactInfo } = req.body;
 
-    if (!name && !expertise && !contactInfo) {
-        return res.status(400).json({ error: 'At least one field (name, expertise, contactInfo) is required to update.' });
+    if (!name && !expertiseid && !contactInfo) {
+        return res
+            .status(400)
+            .json({
+                error: "At least one field (name, expertiseid, contactInfo) is required to update.",
+            });
     }
 
     try {
@@ -72,9 +94,9 @@ const updateStudent = async (req, res) => {
             updates.push(`name = $${updates.length + 1}`);
             values.push(name);
         }
-        if (expertise) {
-            updates.push(`expertise = $${updates.length + 1}`);
-            values.push(expertise);
+        if (expertiseid) {
+            updates.push(`expertiseID = $${updates.length + 1}`);
+            values.push(expertiseid);
         }
         if (contactInfo) {
             updates.push(`contactInfo = $${updates.length + 1}`);
@@ -85,7 +107,7 @@ const updateStudent = async (req, res) => {
 
         const query = `
             UPDATE Student
-            SET ${updates.join(', ')}
+            SET ${updates.join(", ")}
             WHERE studentID = $${values.length}
             RETURNING *;
         `;
@@ -93,13 +115,13 @@ const updateStudent = async (req, res) => {
         const result = await pool.query(query, values);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Student not found.' });
+            return res.status(404).json({ error: "Student not found." });
         }
 
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send("Server Error");
     }
 };
 
@@ -108,5 +130,5 @@ module.exports = {
     createStudent,
     getStudent,
     deleteStudent,
-    updateStudent
+    updateStudent,
 };

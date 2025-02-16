@@ -11,7 +11,7 @@ export const OrganizationDetail = () => {
   // Handle input changes for update form
   const [updatedOrganization, setUpdatedOrganization] = useState({
     name: '',
-    contactInfo: ''
+    contactinfo: ''
   });
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export const OrganizationDetail = () => {
         setOrganization(data);
         setUpdatedOrganization({
           name: data.name,
-          contactInfo: data.contactInfo
+          contactinfo: data.contactinfo
         });
       } else {
         console.error("Error fetching organization data");

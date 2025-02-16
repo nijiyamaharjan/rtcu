@@ -1,42 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import expertiseList from "../json/expertise.json"
-
-const expertiseOptions = [
-  'Web Development',
-  'Machine Learning',
-  'Data Science',
-  'Cybersecurity',
-  'Blockchain',
-  'DevOps',
-  'Cloud Computing',
-  'Game Development',
-  'UI/UX Design',
-  'Mobile Development',
-];
-
-const roleOptions = [
-  'Frontend Developer',
-  'Backend Developer',
-  'Fullstack Developer',
-  'AI Engineer',
-  'Data Analyst',
-  'Cloud Architect',
-  'Cybersecurity Analyst',
-  'Game Designer',
-  'QA Engineer',
-  'Product Manager',
-];
 
 export const AddStudent = () => {
   const navigate = useNavigate();
   const [student, setStudent] = useState({
     studentID: '',
     name: '',
-    expertise: '',
-    role: '',
+    expertiseid: '',
     contactInfo: '',
   });
+      const [expertiseList, setExpertiseList] = useState([]);
+  
+      const fetchExpertise = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/expertise");
+            const data = await response.json();
+            console.log("Fetched expertise:", data); // Debugging
+            setExpertiseList(data);
+        } catch (err) {
+            console.error("Error fetching expertise", err);
+        }
+    };
+
+     useEffect(() => {
+            fetchExpertise();
+        }, []);
 
   // Updates the form fields when any input changes
   const handleChange = (e) => {
@@ -64,8 +53,7 @@ export const AddStudent = () => {
       setStudent({
         studentID: '',
         name: '',
-        expertise: '',
-        role: '',
+        expertiseid: '',
         contactInfo: '',
       });
       navigate('/');
@@ -74,6 +62,27 @@ export const AddStudent = () => {
     }
   };
 
+  const handleAddExpertise = async () => {
+    const newExpertise = prompt("Enter new expertise name");
+    if (newExpertise) {
+      const response = await fetch("http://localhost:5000/expertise", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expertisename: newExpertise }),
+      });
+  
+      if (response.ok) {
+        const addedExpertise = await response.json();
+        // Add the new expertise to the state instead of re-fetching all expertise
+        setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
+      } else {
+        alert("Failed to add expertise");
+      }
+    }
+  };
+  
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
       <h2 className="text-2xl font-semibold mb-6">Add Student</h2>
@@ -110,53 +119,38 @@ export const AddStudent = () => {
           />
         </div>
 
-        {/* Expertise Dropdown */}
         <div>
-          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">
-            Expertise
-          </label>
-          <select
-            id="expertise"
-            name="expertise"
-            value={student.expertise} // Updates when an option is clicked
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            style={{ maxHeight: '100px', overflowY: 'auto' }} // Limits height and adds scrolling
-          >
-            <option value="" disabled>
-              Select Expertise
-            </option>
-            {expertiseOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Role Dropdown */}
-        <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-            Role
-          </label>
-          <select
-            id="role"
-            name="role"
-            value={student.role} // Updates when an option is clicked
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            style={{ maxHeight: '100px', overflowY: 'auto' }} // Limits height and adds scrolling
-          >
-            <option value="" disabled>
-              Select Role
-            </option>
-            {roleOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+                    <label
+                        htmlFor="expertiseid"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Expertise
+                    </label>
+                    <select
+                        id="expertiseid"
+                        name="expertiseid"
+                        value={student.expertiseid}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                    >
+                        <option value="">Select Expertise</option>
+                        {expertiseList.map((expertise) => (
+                            <option
+                                key={expertise.expertiseid}
+                                value={expertise.expertiseid}
+                            >
+                                {expertise.expertisename}
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        type="button"
+                        onClick={handleAddExpertise}
+                        className="mt-2 text-blue-600"
+                    >
+                        Add New Expertise
+                    </button>
+                </div>
 
         {/* Contact Info */}
         <div>

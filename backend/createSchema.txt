@@ -22,41 +22,17 @@ CREATE TABLE Project (
     outsourcingOrgID VARCHAR REFERENCES Organization(organizationID)
 );
 
--- Create TeamMembers Table
-CREATE TABLE TeamMembers (
-    memberID VARCHAR PRIMARY KEY,
-    projectID VARCHAR REFERENCES Project(projectID),
-    trainingID VARCHAR REFERENCES Training(trainingID),
-    name VARCHAR NOT NULL,
-    role VARCHAR,
-    expertise VARCHAR,
-    contactInfo VARCHAR
+
+-- Create Role Table
+CREATE TABLE Role (
+    roleID SERIAL PRIMARY KEY,
+    roleName VARCHAR UNIQUE NOT NULL
 );
 
--- Create Faculty Table
-CREATE TABLE Faculty (
-    facultyID VARCHAR PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    role VARCHAR,
-    expertise VARCHAR,
-    contactInfo VARCHAR
-);
-
--- Create Expert Table
-CREATE TABLE Expert (
-    expertID VARCHAR PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    role VARCHAR,
-    expertise VARCHAR,
-    contactInfo VARCHAR
-);
-
--- Create Student Table
-CREATE TABLE Student (
-    studentID VARCHAR PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    expertise VARCHAR,
-    contactInfo VARCHAR
+-- Create Expertise Table
+CREATE TABLE Expertise (
+    expertiseID SERIAL PRIMARY KEY,
+    expertiseName VARCHAR UNIQUE NOT NULL
 );
 
 -- Create Trainings Table
@@ -90,4 +66,41 @@ CREATE TABLE Training_TeamMember (
     trainingID VARCHAR REFERENCES Training(trainingID),
     memberID VARCHAR REFERENCES TeamMembers(memberID),
     PRIMARY KEY (trainingID, memberID)
+);
+
+-- Update Expert Table
+CREATE TABLE Expert (
+    expertID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    roleID INT REFERENCES Role(roleID) ON DELETE SET NULL,
+    expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
+    contactInfo VARCHAR
+);
+
+-- Update Faculty Table
+CREATE TABLE Faculty (
+    facultyID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    roleID INT REFERENCES Role(roleID) ON DELETE SET NULL,
+    expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
+    contactInfo VARCHAR
+);
+
+-- Update TeamMembers Table
+CREATE TABLE TeamMembers (
+    memberID VARCHAR PRIMARY KEY,
+    projectID VARCHAR REFERENCES Project(projectID),
+    trainingID VARCHAR REFERENCES Training(trainingID),
+    name VARCHAR NOT NULL,
+    roleID INT REFERENCES Role(roleID) ON DELETE SET NULL,
+    expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
+    contactInfo VARCHAR
+);
+
+-- Update Student Table
+CREATE TABLE Student (
+    studentID VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
+    contactInfo VARCHAR
 );

@@ -6,6 +6,8 @@ const organizationRoutes = require('./routes/organizationRoutes');
 const expertRoutes = require('./routes/expertRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const facultyRoutes = require('./routes/facultyRoutes');
+const roleRoutes = require('./routes/roleRoutes');
+const expertiseRoutes = require('./routes/expertiseRoutes');
 const teamMembersRoutes = require('./routes/teamMembersRoutes');
 const user = require('./routes/user')
 const app = express();
@@ -18,6 +20,8 @@ app.use(cors({
 app.use(express.json())
 
 app.use('/project', projectRoutes);
+app.use('/role', roleRoutes);
+app.use('/expertise', expertiseRoutes);
 app.use('/training', trainingRoutes);
 app.use('/organization', organizationRoutes);
 app.use('/expert', expertRoutes);
