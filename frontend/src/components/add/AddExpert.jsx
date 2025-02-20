@@ -5,25 +5,12 @@ export const AddExpert = () => {
     const [expert, setExpert] = useState({
         expertID: "",
         name: "",
-        roleid: "", // Store roleid instead of rolename
         expertiseid: "", // Store expertiseid instead of expertisename
         contactInfo: "",
     });
     const navigate= useNavigate()
 
-    const [roles, setRoles] = useState([]);
     const [expertiseList, setExpertiseList] = useState([]);
-
-    const fetchRoles = async () => {
-      try {
-          const response = await fetch("http://localhost:5000/role");
-          const data = await response.json();
-          console.log("Fetched roles:", data); // Debugging
-          setRoles(data);
-      } catch (err) {
-          console.error("Error fetching roles", err);
-      }
-  };
 
   const fetchExpertise = async () => {
       try {
@@ -37,7 +24,6 @@ export const AddExpert = () => {
   };
 
     useEffect(() => {
-        fetchRoles();
         fetchExpertise();
     }, []);
 
@@ -65,7 +51,6 @@ export const AddExpert = () => {
             setExpert({
                 expertID: "",
                 name: "",
-                roleid: "", // Reset roleid
                 expertiseid: "", // Reset expertiseid
                 contactInfo: "",
             });
@@ -121,47 +106,9 @@ export const AddExpert = () => {
         }
     };
 
-    const handleAddRole = async () => {
-      const newRole = prompt("Enter new role name");
-      if (newRole) {
-        const response = await fetch("http://localhost:5000/role", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ rolename: newRole }),
-        });
-    
-        if (response.ok) {
-          const addedRole = await response.json();
-          // Add the new role to the state instead of re-fetching all roles
-          setRoles((prevRoles) => [...prevRoles, addedRole]);
-        } else {
-          alert("Failed to add role");
-        }
-      }
-    };
     
 
-    const handleDeleteRole = async (roleID) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this role?"
-        );
-        if (confirmDelete) {
-            const response = await fetch(
-                `http://localhost:5000/role/${roleID}`,
-                {
-                    method: "DELETE",
-                }
-            );
-
-            if (response.ok) {
-                setRoles(roles.filter((item) => item.roleid !== roleID));
-            } else {
-                alert("Failed to delete role");
-            }
-        }
-    };
+    
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
@@ -202,37 +149,7 @@ export const AddExpert = () => {
                         required
                     />
                 </div>
-
-                {/* Dropdown for Role */}
-                <div>
-                    <label
-                        htmlFor="roleid"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Role
-                    </label>
-                    <select
-                        id="roleid"
-                        name="roleid"
-                        value={expert.roleid}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                    >
-                        <option value="">Select Role</option>
-                        {roles.map((role) => (
-                            <option key={role.roleid} value={role.roleid}>
-                                {role.rolename}
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        type="button"
-                        onClick={handleAddRole}
-                        className="mt-2 text-blue-600"
-                    >
-                        Add New Role
-                    </button>
-                </div>
+                
 
                 {/* Dropdown for Expertise */}
                 <div>

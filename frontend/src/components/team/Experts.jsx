@@ -77,9 +77,6 @@ export const Experts = () => {
                 <span className="font-semibold">Expert ID:</span> {expert.expertid}
               </p>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-semibold">Role:</span> {expert.rolename}
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
                 <span className="font-semibold">Expertise:</span> {expert.expertisename}
               </p>
               <p className="text-sm text-gray-600 mb-4">

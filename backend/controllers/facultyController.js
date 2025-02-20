@@ -1,12 +1,11 @@
 const pool = require('../db'); // Adjust the path as necessary
 
-// Get all faculty with their roleName and expertiseName
+// Get all faculty with their expertiseName
 const getAllFaculty = async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT f.*, r.roleName, ex.expertiseName
+            SELECT f.*, ex.expertiseName
             FROM Faculty f
-            JOIN Role r ON f.roleid = r.roleID
             JOIN Expertise ex ON f.expertiseid = ex.expertiseID
         `);
         res.json(result.rows);
@@ -18,21 +17,21 @@ const getAllFaculty = async (req, res) => {
 
 // Create a new faculty member
 const createFaculty = async (req, res) => {
-    const { facultyID, name, roleid, expertiseid, contactInfo } = req.body;
+    const { facultyID, name, expertiseid, contactInfo } = req.body;
 
-    // Validate that role and expertise are provided with correct IDs
-    if (!roleid || !expertiseid) {
-        return res.status(400).json({ error: 'Role ID and Expertise ID are required.' });
+    // Validate that expertise are provided with correct IDs
+    if (!expertiseid) {
+        return res.status(400).json({ error: 'Expertise ID are required.' });
     }
 
     try {
-        // Insert new faculty using the role and expertise IDs
+        // Insert new faculty using the expertise IDs
         const query = `
-            INSERT INTO Faculty (facultyID, name, roleid, expertiseid, contactInfo)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO Faculty (facultyID, name, expertiseid, contactInfo)
+            VALUES ($1, $2, $3, $4)
             RETURNING *;
         `;
-        const values = [facultyID, name, roleid, expertiseid, contactInfo];
+        const values = [facultyID, name, expertiseid, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -46,9 +45,8 @@ const getFaculty = async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(`
-            SELECT f.*, r.roleName, ex.expertiseName
+            SELECT f.*, ex.expertiseName
             FROM Faculty f
-            JOIN Role r ON f.roleid = r.roleID
             JOIN Expertise ex ON f.expertiseid = ex.expertiseID
             WHERE facultyID = $1
         `, [id]);
@@ -80,10 +78,10 @@ const deleteFaculty = async (req, res) => {
 // Update a faculty member's information
 const updateFaculty = async (req, res) => {
     const { id } = req.params;
-    const { name, roleid, expertiseid, contactInfo } = req.body;
+    const { name, expertiseid, contactInfo } = req.body;
 
-    if (!roleid && !expertiseid && !name && !contactInfo) {
-        return res.status(400).json({ error: 'At least one field (role, expertise, name, or contactInfo) is required to update.' });
+    if (!expertiseid && !name && !contactInfo) {
+        return res.status(400).json({ error: 'At least one field ( expertise, name, or contactInfo) is required to update.' });
     }
 
     try {
@@ -91,10 +89,6 @@ const updateFaculty = async (req, res) => {
         const updates = [];
         const values = [];
 
-        if (roleid) {
-            updates.push(`roleID = $${updates.length + 1}`);
-            values.push(roleid);
-        }
 
         if (expertiseid) {
             updates.push(`expertiseID = $${updates.length + 1}`);

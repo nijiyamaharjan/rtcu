@@ -78,9 +78,6 @@ export const Faculty = () => {
                 <span className="font-semibold">Faculty ID:</span> {person.facultyid}
               </p>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-semibold">Role:</span> {person.rolename}
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
                 <span className="font-semibold">Expertise:</span> {person.expertisename}
               </p>
               <p className="text-sm text-gray-600 mb-4">

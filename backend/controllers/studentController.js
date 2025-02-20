@@ -3,9 +3,8 @@ const pool = require("../db"); // Adjust the path as necessary
 const getAllStudents = async (req, res) => {
     try {
         const result =
-            await pool.query(`SELECT s.*, r.roleName, ex.expertiseName
+            await pool.query(`SELECT s.*, ex.expertiseName
             FROM Student s
-            JOIN Role r ON s.roleid = r.roleID
             JOIN Expertise ex ON s.expertiseID = ex.expertiseID`);
         res.json(result.rows);
     } catch (err) {
@@ -15,18 +14,18 @@ const getAllStudents = async (req, res) => {
 };
 
 const createStudent = async (req, res) => {
-    const { studentID, name, expertiseid, contactInfo, roleid } = req.body;
+    const { studentID, name, expertiseid, contactInfo } = req.body;
 
-    if (!expertiseid || !roleid) {
-        return res.status(400).json({ error: 'Expertise and Role ID is required.' });
+    if (!expertiseid) {
+        return res.status(400).json({ error: 'Expertise ID is required.' });
     }
     try {
         const query = `
-            INSERT INTO Student (studentID, name, expertiseID, contactInfo, roleID)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO Student (studentID, name, expertiseID, contactInfo)
+            VALUES ($1, $2, $3, $4)
             RETURNING *;
         `;
-        const values = [studentID, name, expertiseid, contactInfo, roleid];
+        const values = [studentID, name, expertiseid, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {

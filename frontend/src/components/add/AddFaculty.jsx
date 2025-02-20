@@ -6,24 +6,13 @@ export const AddFaculty = () => {
   const [faculty, setFaculty] = useState({
     facultyID: '',
     name: '',
-    roleid: '', // Store roleid instead of rolename
     expertiseid: '', // Store expertiseid instead of expertisename
     contactInfo: ''
   });
 
-  const [roles, setRoles] = useState([]);
   const [expertiseList, setExpertiseList] = useState([]);
 
-  // Fetch roles from the server
-  const fetchRoles = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/role');
-      const data = await response.json();
-      setRoles(data);
-    } catch (err) {
-      console.error('Error fetching roles', err);
-    }
-  };
+
 
   // Fetch expertise from the server
   const fetchExpertise = async () => {
@@ -37,7 +26,6 @@ export const AddFaculty = () => {
   };
 
   useEffect(() => {
-    fetchRoles();
     fetchExpertise();
   }, []);
 
@@ -65,34 +53,12 @@ export const AddFaculty = () => {
       setFaculty({
         facultyID: '',
         name: '',
-        roleid: '', // Reset roleid
         expertiseid: '', // Reset expertiseid
         contactInfo: ''
       });
       navigate('/team');
     } else {
       alert('Error adding faculty');
-    }
-  };
-
-  // Add new role
-  const handleAddRole = async () => {
-    const newRole = prompt('Enter new role name');
-    if (newRole) {
-      const response = await fetch('http://localhost:5000/role', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ rolename: newRole })
-      });
-
-      if (response.ok) {
-        const addedRole = await response.json();
-        setRoles((prevRoles) => [...prevRoles, addedRole]);
-      } else {
-        alert('Failed to add role');
-      }
     }
   };
 
@@ -151,33 +117,7 @@ export const AddFaculty = () => {
           />
         </div>
 
-        {/* Dropdown for Role */}
-        <div>
-          <label htmlFor="roleid" className="block text-sm font-medium text-gray-700">
-            Role
-          </label>
-          <select
-            id="roleid"
-            name="roleid"
-            value={faculty.roleid}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          >
-            <option value="">Select Role</option>
-            {roles.map((role) => (
-              <option key={role.roleid} value={role.roleid}>
-                {role.rolename}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={handleAddRole}
-            className="mt-2 text-blue-600"
-          >
-            Add New Role
-          </button>
-        </div>
+        
 
         {/* Dropdown for Expertise */}
         <div>

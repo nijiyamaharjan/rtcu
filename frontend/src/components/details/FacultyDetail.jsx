@@ -6,14 +6,12 @@ export const FacultyDetail = () => {
   const { id } = useParams(); // Get the facultyID from the route parameter
   const navigate = useNavigate(); // For navigation after update or delete
   const [faculty, setFaculty] = useState(null);
-  const [roles, setRoles] = useState([]);
   const [expertiseList, setExpertiseList] = useState([]);
   const user = useAuth()
 
   // Handle input changes for update form
   const [updatedFaculty, setUpdatedFaculty] = useState({
     name: '',
-    roleid: '', // Use roleID instead of role name
     expertiseid: '', // Use expertiseID instead of expertise name
     contactInfo: '',
   });
@@ -28,7 +26,6 @@ export const FacultyDetail = () => {
           setFaculty(data);
           setUpdatedFaculty({
             name: data.name,
-            roleid: data.roleid, // Use roleID from the fetched data
             expertiseid: data.expertiseid, // Use expertiseID from the fetched data
             contactInfo: data.contactinfo,
           });
@@ -40,23 +37,20 @@ export const FacultyDetail = () => {
       }
     };
 
-    // Fetch roles and expertise options
-    const fetchRolesAndExpertise = async () => {
-      const rolesResponse = await fetch('http://localhost:5000/role');
+    // Fetch expertise options
+    const fetchExpertise = async () => {
       const expertiseResponse = await fetch('http://localhost:5000/expertise');
 
-      if (rolesResponse.ok && expertiseResponse.ok) {
-        const rolesData = await rolesResponse.json();
+      if (expertiseResponse.ok) {
         const expertiseData = await expertiseResponse.json();
-        setRoles(rolesData);
         setExpertiseList(expertiseData);
       } else {
-        console.error('Error fetching roles or expertise');
+        console.error('Error fetching expertise');
       }
     };
 
     fetchFacultyData();
-    fetchRolesAndExpertise();
+    fetchExpertise();
   }, [id]); // Fetch data when the id changes
 
   const handleUpdateChange = (e) => {
@@ -70,7 +64,7 @@ export const FacultyDetail = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
 
-    // Send the updated data with roleID and expertiseID
+    // Send the updated data with expertiseID
     const response = await fetch(`http://localhost:5000/faculty/${id}`, {
       method: 'PUT',
       headers: {
@@ -108,7 +102,7 @@ export const FacultyDetail = () => {
     }
   };
 
-  if (!faculty || !roles.length || !expertiseList.length) {
+  if (!faculty || !expertiseList.length) {
     return <div className="text-center text-gray-500">Loading...</div>; // Show loading if the data is not yet loaded
   }
 
@@ -120,7 +114,6 @@ export const FacultyDetail = () => {
       <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-600">
         <span><strong>Faculty ID:</strong> {faculty.facultyid}</span>
         <span><strong>Name:</strong> {faculty.name}</span>
-        <span><strong>Role:</strong> {faculty.rolename}</span>
         <span><strong>Expertise:</strong> {faculty.expertisename}</span>
         <span><strong>Contact Info:</strong> {faculty.contactinfo}</span>
       </div>
@@ -142,27 +135,7 @@ export const FacultyDetail = () => {
           />
         </div>
 
-        <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <select
-                id="role"
-                name="roleid" // Use roleID instead of role
-                value={updatedFaculty.roleid} // Bind to roleID, not rolename
-                onChange={handleUpdateChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option value="" disabled>
-                  Select role
-                </option>
-                {roles.map((role) => (
-                  <option key={role.roleid} value={role.roleid}>
-                    {role.rolename}
-                  </option>
-                ))}
-              </select>
-            </div>
+        
 
             <div>
               <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">

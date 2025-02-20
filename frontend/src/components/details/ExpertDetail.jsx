@@ -6,13 +6,11 @@ export const ExpertDetail = () => {
     const { id } = useParams(); // Get the expertID from the route parameter
     const navigate = useNavigate(); // For navigation after update or delete
     const [expert, setExpert] = useState(null);
-    const [roles, setRoles] = useState([]);
     const [expertiseList, setExpertiseList] = useState([]);
 
     // Handle input changes for update form
     const [updatedExpert, setUpdatedExpert] = useState({
         name: "",
-        roleid: "", // Use roleID instead of role name
         expertiseid: "", // Use expertiseID instead of expertise name
         contactInfo: "",
     });
@@ -30,7 +28,6 @@ export const ExpertDetail = () => {
                     setExpert(data);
                     setUpdatedExpert({
                         name: data.name,
-                        roleid: data.roleid, // Use roleID from the fetched data
                         expertiseid: data.expertiseid, // Use expertiseID from the fetched data
                         contactInfo: data.contactinfo,
                     });
@@ -42,25 +39,22 @@ export const ExpertDetail = () => {
             }
         };
 
-        // Fetch roles and expertise options
-        const fetchRolesAndExpertise = async () => {
-            const rolesResponse = await fetch("http://localhost:5000/role");
+        // Fetch expertise options
+        const fetchExpertise = async () => {
             const expertiseResponse = await fetch(
                 "http://localhost:5000/expertise"
             );
 
-            if (rolesResponse.ok && expertiseResponse.ok) {
-                const rolesData = await rolesResponse.json();
+            if (expertiseResponse.ok) {
                 const expertiseData = await expertiseResponse.json();
-                setRoles(rolesData);
                 setExpertiseList(expertiseData);
             } else {
-                console.error("Error fetching roles or expertise");
+                console.error("Error fetching expertise");
             }
         };
 
         fetchExpertData();
-        fetchRolesAndExpertise();
+        fetchExpertise();
     }, [id]); // Fetch data when the id changes
 
     const handleUpdateChange = (e) => {
@@ -74,7 +68,7 @@ export const ExpertDetail = () => {
     const handleUpdateSubmit = async (e) => {
         e.preventDefault();
 
-        // Send the updated data with roleID and expertiseID
+        // Send the updated data with expertiseID
         const response = await fetch(`http://localhost:5000/expert/${id}`, {
             method: "PUT",
             headers: {
@@ -107,7 +101,7 @@ export const ExpertDetail = () => {
         }
     };
 
-    if (!expert || !roles.length || !expertiseList.length) {
+    if (!expert || !expertiseList.length) {
         return <div>Loading...</div>; // Show loading if the data is not yet loaded
     }
 
@@ -122,9 +116,6 @@ export const ExpertDetail = () => {
                 </span>
                 <span>
                     <strong>Name:</strong> {expert.name}
-                </span>
-                <span>
-                    <strong>Role:</strong> {expert.rolename}
                 </span>
                 <span>
                     <strong>Expertise:</strong> {expert.expertisename}
@@ -158,33 +149,7 @@ export const ExpertDetail = () => {
                             />
                         </div>
 
-                        <div>
-                            <label
-                                htmlFor="role"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Role
-                            </label>
-                            <select
-                                id="role"
-                                name="roleid" // Use roleID instead of role
-                                value={updatedExpert.roleid} // Bind to roleID, not rolename
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="" disabled>
-                                    Select role
-                                </option>
-                                {roles.map((role) => (
-                                    <option
-                                        key={role.roleid}
-                                        value={role.roleid}
-                                    >
-                                        {role.rolename}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        
 
                         <div>
                             <label

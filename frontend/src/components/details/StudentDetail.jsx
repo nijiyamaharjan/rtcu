@@ -32,7 +32,7 @@ export const StudentDetail = () => {
             }
         };
 
-        // Fetch roles and expertise options
+        // Fetch expertise options
         const fetchExpertise = async () => {
             const expertiseResponse = await fetch(
                 "http://localhost:5000/expertise"

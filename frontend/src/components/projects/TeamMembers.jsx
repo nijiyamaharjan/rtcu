@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import useAuth from "../../hooks/useAuth";
 
 export const TeamMembers = ({ projectID }) => {
     const [allTeam, setAllTeam] = useState({
@@ -13,6 +14,7 @@ export const TeamMembers = ({ projectID }) => {
     const [memberid, setMemberID] = useState("");
     const [roleid, setRoleID] = useState("");
     const [roles, setRoles] = useState([]);
+    const user = useAuth();
     const [editingRole, setEditingRole] = useState(null);
 
     // Fetch roles from API
@@ -135,6 +137,25 @@ export const TeamMembers = ({ projectID }) => {
         }
     };
 
+    const handleDeleteRole = async (roleID) => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this role?"
+        );
+        if (confirmDelete) {
+            const response = await fetch(
+                `http://localhost:5000/role/${roleID}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (response.ok) {
+                setRoles(roles.filter((item) => item.roleid !== roleID));
+            } else {
+                alert("Failed to delete role");
+            }
+        }
+    };
 
     // Update team member role
     const handleUpdateRole = async () => {
@@ -176,7 +197,8 @@ export const TeamMembers = ({ projectID }) => {
 
     return (
         <div className="team-member-selector">
-            <h3 className="text-2xl font-semibold mb-4">Add Team Member</h3>
+            {user && <>
+                <h3 className="text-2xl font-semibold mb-4">Add Team Member</h3>
             <div className="flex items-center space-x-4">
                 <div className="flex-1">
                     <label htmlFor="memberid" className="block text-sm font-medium text-gray-700">Member ID</label>
@@ -261,12 +283,14 @@ export const TeamMembers = ({ projectID }) => {
                     </div>
                 )}
             </div>
+            </>}
+            
 
             <h3 className="text-2xl font-semibold my-4">Project Team Members</h3>
             <table className="w-full text-sm border">
                 <thead className="border-b">
                     <tr>
-                        {["ID", "Name", "Project Role", "Expertise", "Contact Info", "Actions"].map((header) => (
+                        {["ID", "Name", "Project Role", "Expertise", "Contact Info"].map((header) => (
                             <th key={header} className="text-left py-2 px-2 text-gray-700 border-r">
                                 {header}
                             </th>
@@ -305,7 +329,8 @@ export const TeamMembers = ({ projectID }) => {
                                 </td>
                                 <td className="py-2 px-2 text-gray-600 border-r">{member.expertisename}</td>
                                 <td className="py-2 px-2 text-gray-600 border-r">{member.contactinfo}</td>
-                                <td className="py-2 px-2 flex space-x-2">
+                                {user && <>
+                                    <td className="py-2 px-2 flex space-x-2">
                                     <button
                                         onClick={() => handleDeleteMember(member.memberid)}
                                         className="text-gray-500 hover:text-red-500"
@@ -330,6 +355,8 @@ export const TeamMembers = ({ projectID }) => {
                                         </button>
                                     )}
                                 </td>
+                                </>}
+                                
                             </tr>
                         ))
                     )}

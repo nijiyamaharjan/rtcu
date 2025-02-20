@@ -4,9 +4,8 @@ const pool = require('../db'); // Adjust the path as necessary
 const getAllExperts = async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT e.*, r.roleName, ex.expertiseName
+            SELECT e.*, ex.expertiseName
             FROM Expert e
-            JOIN Role r ON e.roleID = r.roleID
             JOIN Expertise ex ON e.expertiseID = ex.expertiseID
         `);
         res.json(result.rows);
@@ -14,25 +13,26 @@ const getAllExperts = async (req, res) => {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
+    
 }
 
 // Create a new expert
 const createExpert = async (req, res) => {
-    const { expertID, name, roleid, expertiseid, contactInfo } = req.body;
+    const { expertID, name, expertiseid, contactInfo } = req.body;
 
-    // Validate that roleid and expertiseid are valid integers
-    if (!roleid || !expertiseid) {
-        return res.status(400).json({ error: 'Role ID and Expertise ID are required.' });
+    // Validate that and expertiseid are valid integers
+    if ( !expertiseid) {
+        return res.status(400).json({ error: 'Expertise ID required.' });
     }
 
     try {
-        // Insert new expert using the roleid and expertiseid provided
+        // Insert new expert using the and expertiseid provided
         const query = `
-            INSERT INTO Expert (expertID, name, roleID, expertiseID, contactInfo)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO Expert (expertID, name, expertiseID, contactInfo)
+            VALUES ($1, $2, $3, $4)
             RETURNING *;
         `;
-        const values = [expertID, name, roleid, expertiseid, contactInfo];
+        const values = [expertID, name, expertiseid, contactInfo];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -46,9 +46,8 @@ const getExpert = async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(`
-            SELECT e.*, r.roleName, ex.expertiseName
+            SELECT e.*, ex.expertiseName
             FROM Expert e
-            JOIN Role r ON e.roleID = r.roleID
             JOIN Expertise ex ON e.expertiseID = ex.expertiseID
             WHERE expertID = $1
         `, [id]);
@@ -80,22 +79,17 @@ const deleteExpert = async (req, res) => {
 // Update an expert's information
 const updateExpert = async (req, res) => {
     const { id } = req.params;
-    const { name, roleid, expertiseid, contactInfo } = req.body;
+    const { name, expertiseid, contactInfo } = req.body;
 
-    if (!roleid && !expertiseid && !name && !contactInfo) {
-        return res.status(400).json({ error: 'At least one field (role, expertise, name, or contactInfo) is required to update.' });
+
+    if (!expertiseid && !name && !contactInfo) {
+        return res.status(400).json({ error: 'At least one field (expertise, name, or contactInfo) is required to update.' });
     }
 
     try {
         // Collect the updates
         const updates = [];
         const values = [];
-
-        if (roleid) {
-            updates.push(`roleID = $${updates.length + 1}`);
-            values.push(roleid);
-        }
-
         if (expertiseid) {
             updates.push(`expertiseID = $${updates.length + 1}`);
             values.push(expertiseid);
@@ -132,6 +126,7 @@ const updateExpert = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 module.exports = {
     getAllExperts,
