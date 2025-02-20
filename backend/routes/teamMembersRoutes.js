@@ -7,6 +7,8 @@ router.get('all-available-team', async (req, res) => {
     const projectId = req.projectId;
     teamMembersController.getAllAvailableMembers(projectId, res);
 })
+
+
 router.get('/all', (req, res) => {
     const projectId = req.projectId;
     teamMembersController.getAllTeamMembers(projectId, res);
@@ -23,8 +25,12 @@ router.post('/add', (req, res) => {
 
 router.put('/:memberID', (req, res) => {
     const projectId = req.projectId;
-    teamMembersController.updateTeamMember(projectId, req, res)
+    teamMembersController.updateRole(projectId, req, res)
 })
+// router.put('/:memberID', (req, res) => {
+//     const projectId = req.projectId;
+//     teamMembersController.updateTeamMember(projectId, req, res)
+// })
 
 router.delete('/:memberID', (req, res) => {
     const projectId = req.projectId;

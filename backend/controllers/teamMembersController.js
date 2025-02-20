@@ -1,5 +1,34 @@
 const pool = require('../db');
 
+// Update a team member's role
+const updateRole = async (projectId, req, res) => {
+    const { memberID } = req.params;
+    const { roleid } = req.body;  // The new roleID to update
+
+    if (!roleid) {
+        return res.status(400).json({ error: 'Role ID is required to update.' });
+    }
+
+    try {
+        // Update the role of the team member
+        const result = await pool.query(`
+            UPDATE TeamMembers
+            SET roleID = $1
+            WHERE memberID = $2 AND projectID = $3
+            RETURNING *;
+        `, [roleid, memberID, projectId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Team member not found.' });
+        }
+
+        res.json(result.rows[0]);  // Send back the updated team member
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 // Get all team members with role and expertise names
 const getAllTeamMembers = async (projectId, res) => {
     try {
@@ -182,5 +211,6 @@ module.exports = {
     createTeamMember,
     updateTeamMember,
     deleteTeamMember,
+    updateRole,
     getAllAvailableMembers
 };
