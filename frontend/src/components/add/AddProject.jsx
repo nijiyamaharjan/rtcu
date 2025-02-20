@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 export const AddProject = () => {
   const navigate = useNavigate();
   const [organizations, setOrganizations] = useState([]);
-  const [project, setProject] = useState({
+  const [project, setProject] = useState({ 
     projectID: '',
     title: '',
     description: '',
@@ -21,6 +21,9 @@ export const AddProject = () => {
     const fetchOrganizations = async () => {
       try {
         const response = await fetch('http://localhost:5000/organization/all');
+        if (!response.ok) {
+          throw new Error('Failed to fetch organizations');
+        }
         const data = await response.json();
         setOrganizations(data);
       } catch (error) {
@@ -43,25 +46,25 @@ export const AddProject = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(project)
       });
-      if (response.ok) {
-        alert('Project added successfully');
-        setProject({
-          projectID: '',
-          title: '',
-          description: '',
-          type: 'research',
-          startDate: '',
-          endDate: '',
-          status: 'ongoing',
-          budget: '',
-          fundingOrgID: '',
-          outsourcingOrgID: ''
-        });
-        navigate('/');
-      } else {
-        alert('Error adding project');
+      if (!response.ok) {
+        throw new Error('Error adding project');
       }
+      alert('Project added successfully');
+      setProject({
+        projectID: '',
+        title: '',
+        description: '',
+        type: 'research',
+        startDate: '',
+        endDate: '',
+        status: 'ongoing',
+        budget: '',
+        fundingOrgID: '',
+        outsourcingOrgID: ''
+      });
+      navigate('/');
     } catch (error) {
+      console.error('Error submitting the project:', error);  // Log the error
       alert('Failed to submit the project. Please try again.');
     }
   };
@@ -110,7 +113,7 @@ export const AddProject = () => {
             label: 'Funding Organization',
             name: 'fundingOrgID',
             options: organizations.map((org) => ({
-              value: org.organizationID,
+              value: org.organizationid,
               label: org.name
             }))
           },
@@ -118,7 +121,7 @@ export const AddProject = () => {
             label: 'Outsourcing Organization',
             name: 'outsourcingOrgID',
             options: organizations.map((org) => ({
-              value: org.organizationID,
+              value: org.organizationid,
               label: org.name
             }))
           }

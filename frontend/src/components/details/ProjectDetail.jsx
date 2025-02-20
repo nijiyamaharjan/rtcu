@@ -16,8 +16,11 @@ export const ProjectDetail = () => {
   });
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isTeamMembersExpanded, setIsTeamMembersExpanded] = useState(false);
-  const user = useAuth()
+  const [organizations, setOrganizations] = useState([]);
+  const [loadingOrganizations, setLoadingOrganizations] = useState(true);
+  const user = useAuth();
 
+  // Fetch project data
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -35,11 +38,30 @@ export const ProjectDetail = () => {
     fetchProject();
   }, [projectID]);
 
+  // Fetch organizations data
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/organization/all");
+        if (!response.ok) throw new Error("Failed to fetch organizations");
+        const orgData = await response.json();
+        setOrganizations(orgData);
+      } catch (err) {
+        console.error("Error fetching organizations:", err);
+      } finally {
+        setLoadingOrganizations(false);
+      }
+    };
+    fetchOrganizations();
+  }, []);
+
+  // Handle input changes for project update
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedProject(prev => ({ ...prev, [name]: value }));
   };
 
+  // Handle project update
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -56,6 +78,7 @@ export const ProjectDetail = () => {
     }
   };
 
+  // Handle project deletion
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this project?")) return;
     try {
@@ -103,8 +126,8 @@ export const ProjectDetail = () => {
             ["Start Date", project.startdate],
             ["End Date", project.enddate],
             ["Status", project.status],
-            ["Funding Organization", project.fundingorgid],
-            ["Outsourcing Organization", project.outsourcingorgid],
+            ["Funding Organization", loadingOrganizations ? "Loading..." : organizations.find(org => org.organizationid === project.fundingorgid)?.name || "Unknown Organization"],
+            ["Outsourcing Organization", loadingOrganizations ? "Loading..." : organizations.find(org => org.organizationid === project.outsourcingorgid)?.name || "Unknown Organization"],
           ].map(([label, value]) => (
             <div key={label} className="border-b pb-2">
               <dt className="font-medium text-gray-900">{label}</dt>
@@ -116,13 +139,13 @@ export const ProjectDetail = () => {
         <div className="flex gap-4 pt-4">
           {user && (
             <button
-            onClick={() => setIsUpdateModalOpen(true)}
-            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-            title="Update Project"
-          >
-            <Pencil size={20} />
-          </button>
-          )}         
+              onClick={() => setIsUpdateModalOpen(true)}
+              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+              title="Update Project"
+            >
+              <Pencil size={20} />
+            </button>
+          )}
           <button
             onClick={() => setIsTeamMembersExpanded(!isTeamMembersExpanded)}
             className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
@@ -132,14 +155,13 @@ export const ProjectDetail = () => {
           </button>
           {user && (
             <button
-            onClick={handleDelete}
-            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-            title="Delete Project"
-          >
-            <Trash2 size={20} />
-          </button>
+              onClick={handleDelete}
+              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+              title="Delete Project"
+            >
+              <Trash2 size={20} />
+            </button>
           )}
-          
         </div>
 
         {isTeamMembersExpanded && (
@@ -170,9 +192,19 @@ export const ProjectDetail = () => {
                     { label: "Start Date", name: "startdate", type: "date" },
                     { label: "End Date", name: "enddate", type: "date" },
                     { label: "Status", name: "status", type: "text" },
-                    { label: "Funding Organization", name: "fundingorgid", type: "text" },
-                    { label: "Outsourcing Organization", name: "outsourcingorgid", type: "text" },
-                  ].map(({ label, name, type }) => (
+                    { 
+                      label: "Funding Organization", 
+                      name: "fundingorgid", 
+                      type: "select", 
+                      options: organizations.map(org => ({ value: org.organizationid, label: org.name })) 
+                    },
+                    { 
+                      label: "Outsourcing Organization", 
+                      name: "outsourcingorgid", 
+                      type: "select", 
+                      options: organizations.map(org => ({ value: org.organizationid, label: org.name })) 
+                    },
+                  ].map(({ label, name, type, options }) => (
                     <div key={name}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {label}
@@ -185,6 +217,20 @@ export const ProjectDetail = () => {
                           className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           rows={3}
                         />
+                      ) : type === "select" ? (
+                        <select
+                          name={name}
+                          value={updatedProject[name]}
+                          onChange={handleChange}
+                          className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        >
+                          <option value="">Select {label}</option>
+                          {options.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
                       ) : (
                         <input
                           type={type}

@@ -81,7 +81,7 @@ export const Students = () => {
                 <span className="font-semibold">Expertise:</span> {student.expertise}
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                <span className="font-semibold">Contact Info:</span> {student.contactInfo}
+                <span className="font-semibold">Contact Info:</span> {student.contactinfo}
               </p>
               <Link
                 to={`/student/${student.studentid}`}

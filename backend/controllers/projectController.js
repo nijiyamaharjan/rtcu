@@ -25,22 +25,27 @@ const createProject = async (req, res) => {
     } = req.body;
 
     try {
-        // const query = `
-        //     INSERT INTO Project (
-        //         projectID, title, description, type, startDate, endDate, status, budget, fundingOrgID, outsourcingOrgID
-        //     ) VALUES (
-        //         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-        //     )
-        //     RETURNING *;
-        // `;
+        // Check if fundingOrgID exists in the Organization table
+        const fundingOrgResult = await pool.query('SELECT * FROM Organization WHERE organizationID = $1', [fundingOrgID]);
+        if (fundingOrgResult.rows.length === 0) {
+            return res.status(400).json({ message: 'Funding Organization does not exist' });
+        }
+
+        // Check if outsourcingOrgID exists in the Organization table
+        const outsourcingOrgResult = await pool.query('SELECT * FROM Organization WHERE organizationID = $1', [outsourcingOrgID]);
+        if (outsourcingOrgResult.rows.length === 0) {
+            return res.status(400).json({ message: 'Outsourcing Organization does not exist' });
+        }
+
+        // Proceed with inserting the project
         const query = `
-        INSERT INTO Project (
-            projectID, title, description, type, startDate, endDate, status, budget
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8
-        )
-        RETURNING *;
-    `;
+            INSERT INTO Project (
+                projectID, title, description, type, startDate, endDate, status, budget, fundingOrgID, outsourcingOrgID
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+            )
+            RETURNING *;
+        `;
 
         const values = [
             projectID,
@@ -51,6 +56,8 @@ const createProject = async (req, res) => {
             endDate,
             status,
             budget,
+            fundingOrgID,
+            outsourcingOrgID
         ];
 
         const result = await pool.query(query, values);
@@ -60,6 +67,7 @@ const createProject = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 const getProject = async (req, res) => {
     const { id } = req.params;
