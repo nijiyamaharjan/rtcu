@@ -103,4 +103,5 @@ CREATE TABLE Student (
     name VARCHAR NOT NULL,
     expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
     contactInfo VARCHAR
+    roleID INT REFERENCES Role(roleID) ON DELETE SET NULL,
 );

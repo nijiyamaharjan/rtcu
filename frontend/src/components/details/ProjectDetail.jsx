@@ -86,7 +86,7 @@ export const ProjectDetail = () => {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Failed to delete project");
-      navigate("/");
+      navigate("/projects");
     } catch (err) {
       alert(err.message);
     }
