@@ -62,7 +62,7 @@ export const AddProject = () => {
         fundingOrgID: '',
         outsourcingOrgID: ''
       });
-      navigate('/');
+      navigate('/projects');
     } catch (error) {
       console.error('Error submitting the project:', error);  // Log the error
       alert('Failed to submit the project. Please try again.');

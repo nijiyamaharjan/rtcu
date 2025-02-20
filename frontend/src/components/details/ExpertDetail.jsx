@@ -101,7 +101,7 @@ export const ExpertDetail = () => {
 
         if (response.ok) {
             alert("Expert deleted successfully");
-            navigate("/"); // Redirect to home page after deletion
+            navigate("/team"); // Redirect to home page after deletion
         } else {
             alert("Error deleting expert");
         }

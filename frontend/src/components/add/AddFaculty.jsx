@@ -69,7 +69,7 @@ export const AddFaculty = () => {
         expertiseid: '', // Reset expertiseid
         contactInfo: ''
       });
-      navigate('/');
+      navigate('/team');
     } else {
       alert('Error adding faculty');
     }

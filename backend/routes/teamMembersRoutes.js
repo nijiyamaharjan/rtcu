@@ -3,6 +3,10 @@ const teamMembersController = require('../controllers/teamMembersController')
 
 const router = express.Router();
 
+router.get('all-available-team', async (req, res) => {
+    const projectId = req.projectId;
+    teamMembersController.getAllAvailableMembers(projectId, res);
+})
 router.get('/all', (req, res) => {
     const projectId = req.projectId;
     teamMembersController.getAllTeamMembers(projectId, res);

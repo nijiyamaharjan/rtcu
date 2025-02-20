@@ -41,7 +41,7 @@ const getTeamMember = async (projectId, req, res) => {
 
 // Create a new team member
 const createTeamMember = async (projectId, req, res) => {
-    const { memberID, name, roleid, expertiseid, contactInfo } = req.body;
+    const { memberid, name, roleid, expertiseid, contactInfo } = req.body;
     if (!roleid || !expertiseid) {
         return res.status(400).json({ error: 'Role ID and Expertise ID are required.' });
     }
@@ -52,7 +52,7 @@ const createTeamMember = async (projectId, req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
         `;
-        const values = [memberID, projectId, name, roleid, expertiseid, contactInfo];
+        const values = [memberid, projectId, name, roleid, expertiseid, contactInfo];
         console.log(values)
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
@@ -60,14 +60,15 @@ const createTeamMember = async (projectId, req, res) => {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
+
 };
 
 // Update a team member's information
 const updateTeamMember = async (projectId, req, res) => {
     const { memberID } = req.params;
-    const { name, roleid, expertiseid, contactInfo } = req.body;
+    const { name, roleid, expertiseid, contactinfo, membertype } = req.body;
 
-    if (!name && !roleid && !expertiseid && !contactInfo) {
+    if (!name && !roleid && !expertiseid && !contactinfo) {
         return res.status(400).json({ error: 'At least one field (name, role, expertise, contactInfo) is required to update.' });
     }
 
@@ -100,6 +101,29 @@ const updateTeamMember = async (projectId, req, res) => {
             WHERE memberID = $${values.length - 1} AND projectID = $${values.length}
             RETURNING *;
         `;
+
+        switch (memberType.toLowerCase()) {
+            case "student":
+                await db.query(
+                    "UPDATE Student SET name = ?, contactinfo = ? WHERE studentid = ?",
+                    [name, contactInfo, memberID]
+                );
+                break;
+            case "expert":
+                await db.query(
+                    "UPDATE Expert SET name = ?, contactinfo = ? WHERE expertid = ?",
+                    [name, contactInfo, memberID]
+                );
+                break;
+            case "faculty":
+                await db.query(
+                    "UPDATE Faculty SET name = ?, contactinfo = ? WHERE facultyid = ?",
+                    [name, contactInfo, memberID]
+                );
+                break;
+            default:
+                return res.status(400).send("Invalid member type");
+        }
 
         const result = await pool.query(query, values);
 
@@ -134,10 +158,29 @@ const deleteTeamMember = async (projectId, req, res) => {
     }
 };
 
+const getAllAvailableMembers = async (req, res) => {
+    try {
+        const students = await pool.query(`SELECT * FROM Student`);
+        const experts = await pool.query(`SELECT * FROM Expert`);
+        const faculty = await pool.query(`SELECT * FROM Faculty`);
+
+        res.json({
+            students: students.rows,
+            experts: experts.rows,
+            faculty: faculty.rows,
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+};
+
+
 module.exports = {
     getAllTeamMembers,
     getTeamMember,
     createTeamMember,
     updateTeamMember,
-    deleteTeamMember
+    deleteTeamMember,
+    getAllAvailableMembers
 };

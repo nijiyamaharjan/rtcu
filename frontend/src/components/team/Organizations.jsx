@@ -77,7 +77,7 @@ export const Organizations = () => {
                 <span className="font-semibold">Organization ID:</span> {organization.organizationid}
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                <span className="font-semibold">Contact Info:</span> {organization.contactInfo}
+                <span className="font-semibold">Contact Info:</span> {organization.contactinfo}
               </p>
               <Link
                 to={`/organization/${organization.organizationid}`}

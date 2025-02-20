@@ -3,8 +3,9 @@ const pool = require("../db"); // Adjust the path as necessary
 const getAllStudents = async (req, res) => {
     try {
         const result =
-            await pool.query(`SELECT s.*, ex.expertiseName
+            await pool.query(`SELECT s.*, r.roleName, ex.expertiseName
             FROM Student s
+            JOIN Role r ON s.roleid = r.roleID
             JOIN Expertise ex ON s.expertiseID = ex.expertiseID`);
         res.json(result.rows);
     } catch (err) {
@@ -14,24 +15,25 @@ const getAllStudents = async (req, res) => {
 };
 
 const createStudent = async (req, res) => {
-    const { studentID, name, expertiseid, contactInfo } = req.body;
+    const { studentID, name, expertiseid, contactInfo, roleid } = req.body;
 
-    if (!expertiseid) {
-        return res.status(400).json({ error: 'Expertise ID is required.' });
+    if (!expertiseid || !roleid) {
+        return res.status(400).json({ error: 'Expertise and Role ID is required.' });
     }
     try {
         const query = `
-            INSERT INTO Student (studentID, name, expertiseID, contactInfo)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO Student (studentID, name, expertiseID, contactInfo, roleID)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
-        const values = [studentID, name, expertiseid, contactInfo];
+        const values = [studentID, name, expertiseid, contactInfo, roleid];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
+
 };
 
 const getStudent = async (req, res) => {
@@ -83,6 +85,7 @@ const updateStudent = async (req, res) => {
             .json({
                 error: "At least one field (name, expertiseid, contactInfo) is required to update.",
             });
+
     }
 
     try {

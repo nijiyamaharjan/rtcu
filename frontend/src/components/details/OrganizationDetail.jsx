@@ -70,7 +70,7 @@ export const OrganizationDetail = () => {
 
     if (response.ok) {
       alert('Organization deleted successfully');
-      navigate('/'); // Redirect to home page after deletion
+      navigate('/team'); // Redirect to home page after deletion
     } else {
       alert('Error deleting organization');
     }

@@ -38,7 +38,7 @@ export const AddTraining = () => {
                 startDate: '',
                 endDate: ''
             });
-            navigate("/");
+            navigate("/trainings");
         } else {
             alert('Error adding training');
         }

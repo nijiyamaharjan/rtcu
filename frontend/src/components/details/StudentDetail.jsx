@@ -86,7 +86,7 @@ export const StudentDetail = () => {
 
         if (response.ok) {
             alert("Student deleted successfully");
-            navigate("/"); // Redirect to home page after deletion
+            navigate("/team"); // Redirect to home page after deletion
         } else {
             alert("Error deleting student");
         }

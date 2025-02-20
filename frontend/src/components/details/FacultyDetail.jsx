@@ -98,7 +98,7 @@ export const FacultyDetail = () => {
 
       if (response.ok) {
         alert('Faculty deleted successfully');
-        navigate('/'); // Redirect to home page after deletion
+        navigate('/team'); // Redirect to home page after deletion
       } else {
         alert('Error deleting faculty');
       }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AddExpert = () => {
     const [expert, setExpert] = useState({
@@ -8,6 +9,7 @@ export const AddExpert = () => {
         expertiseid: "", // Store expertiseid instead of expertisename
         contactInfo: "",
     });
+    const navigate= useNavigate()
 
     const [roles, setRoles] = useState([]);
     const [expertiseList, setExpertiseList] = useState([]);
@@ -67,6 +69,7 @@ export const AddExpert = () => {
                 expertiseid: "", // Reset expertiseid
                 contactInfo: "",
             });
+            navigate('/team')
         } else {
             alert("Error adding expert");
         }

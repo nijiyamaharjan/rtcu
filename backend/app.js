@@ -12,7 +12,7 @@ const teamMembersRoutes = require('./routes/teamMembersRoutes');
 const user = require('./routes/user')
 const app = express();
 const cors = require('cors')
-
+const pool = require('./db');
 app.use(cors({
     origin: 'http://localhost:5173'
 }))
@@ -28,6 +28,24 @@ app.use('/expert', expertRoutes);
 app.use('/student', studentRoutes);
 app.use('/faculty', facultyRoutes);
 app.use('/auth', user)
+
+app.use('/get-all-team', async (req, res) => {
+    try {
+        const students = await pool.query(`SELECT * FROM Student`);
+        const experts = await pool.query(`SELECT * FROM Expert`);
+        const faculty = await pool.query(`SELECT * FROM Faculty`);
+
+        res.json({
+            students: students.rows,
+            experts: experts.rows,
+            faculty: faculty.rows,
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+})
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

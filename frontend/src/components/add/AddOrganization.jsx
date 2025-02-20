@@ -35,7 +35,7 @@ export const AddOrganization = () => {
         name: '',
         contactInfo: '',
       });
-      navigate('/'); // Navigate to the home page after successful form submission
+      navigate('/team'); // Navigate to the home page after successful form submission
     } else {
       alert('Error adding organization');
     }
