@@ -96,6 +96,27 @@ export const StudentDetail = () => {
         return <div>Loading...</div>; // Show loading if the data is not yet loaded
     }
 
+    const handleAddExpertise = async () => {
+        const newExpertise = prompt("Enter new expertise name");
+        if (newExpertise) {
+          const response = await fetch("http://localhost:5000/expertise", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ expertisename: newExpertise }),
+          });
+      
+          if (response.ok) {
+            const addedExpertise = await response.json();
+            // Add the new expertise to the state instead of re-fetching all expertise
+            setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
+          } else {
+            alert("Failed to add expertise");
+          }
+        }
+      };
+
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
             <h2 className="text-2xl font-semibold mb-6">{student.name}</h2>
@@ -147,6 +168,13 @@ export const StudentDetail = () => {
                             >
                                 Expertise
                             </label>
+                            <button
+                                type="button"
+                                onClick={handleAddExpertise}
+                                className="mt-2 text-blue-600"
+                            >
+                                Add New Expertise
+                            </button>
                             <select
                                 id="expertise"
                                 name="expertiseid" // Use expertiseID instead of expertise

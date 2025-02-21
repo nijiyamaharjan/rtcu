@@ -101,6 +101,27 @@ export const ExpertDetail = () => {
         }
     };
 
+    const handleAddExpertise = async () => {
+        const newExpertise = prompt("Enter new expertise name");
+        if (newExpertise) {
+          const response = await fetch("http://localhost:5000/expertise", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ expertisename: newExpertise }),
+          });
+      
+          if (response.ok) {
+            const addedExpertise = await response.json();
+            // Add the new expertise to the state instead of re-fetching all expertise
+            setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
+          } else {
+            alert("Failed to add expertise");
+          }
+        }
+      };
+
     if (!expert || !expertiseList.length) {
         return <div>Loading...</div>; // Show loading if the data is not yet loaded
     }
@@ -158,6 +179,13 @@ export const ExpertDetail = () => {
                             >
                                 Expertise
                             </label>
+                            <button
+                        type="button"
+                        onClick={handleAddExpertise}
+                        className="mt-2 text-blue-600"
+                    >
+                        Add New Expertise
+                    </button>
                             <select
                                 id="expertise"
                                 name="expertiseid" // Use expertiseID instead of expertise

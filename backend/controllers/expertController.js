@@ -1,6 +1,6 @@
 const pool = require('../db'); // Adjust the path as necessary
 
-// Get all experts with their roleName and expertiseName
+// Get all experts with their expertiseName
 const getAllExperts = async (req, res) => {
     try {
         const result = await pool.query(`
