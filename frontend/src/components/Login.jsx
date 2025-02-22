@@ -17,7 +17,7 @@ const LoginPage = () => {
     if (isSignup) {
       await signup(email, password);
     } else {
-      await login(email, password);
+        await login(email, password);
     }
   };
 
@@ -77,7 +77,7 @@ const LoginPage = () => {
                   />
                 </div>
               </div>
-
+              {error && <p className='text-red-500'>{error}</p>}
               <button
                 type="submit"
                 className="w-full bg-[#001f3f] text-white py-3 rounded-lg font-medium hover:bg-[#003366] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#001f3f]"
