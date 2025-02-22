@@ -1,110 +1,112 @@
-import { Link } from 'react-scroll';
 import { Link as RouterLink } from 'react-router-dom';
 import { useState } from 'react';
-import { FaHome, FaProjectDiagram, FaUserFriends, FaChalkboardTeacher } from 'react-icons/fa';
+import { 
+  Home,
+  ProjectorIcon,
+  Users,
+  GraduationCap,
+  LogOut,
+  LogIn,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 import useAuth from '../hooks/useAuth';
-import { useLogout } from '../hooks/useLogout'
+import { useLogout } from '../hooks/useLogout';
 import { useNavigate } from 'react-router-dom';
+
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const user = useAuth()
-  const logout = useLogout(); // This now directly gives the logout function
+  const user = useAuth();
+  const logout = useLogout();
   const navigate = useNavigate();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
-  const handleLogout = () => {
-    logout(); // Clear token or session
-    navigate('/login')
-  };
+  const menuItems = [
+    { path: '/', icon: Home, label: 'Home' },
+    { path: '/projects', icon: ProjectorIcon, label: 'Projects' },
+    { path: '/trainings', icon: GraduationCap, label: 'Trainings' },
+    { path: '/team', icon: Users, label: 'Team' },
+  ];
 
   return (
     <div
       className={`${
         isOpen ? 'w-64' : 'w-20'
-      } bg-gray-800 text-white h-screen transition-all duration-300 flex flex-col`}
+      } bg-indigo-900 text-white h-screen transition-all duration-300 flex flex-col relative`}
     >
       <button
-        className="p-4 text-gray-400 hover:text-white focus:outline-none"
-        onClick={toggleSidebar}
+        className={`absolute -right-3 top-6 bg-indigo-600 rounded-full p-1.5 
+          hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 
+          focus:ring-offset-2 transition-all duration-300 shadow-lg`}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? '<' : '>'}
-      </button>
-      <ul className="mt-4 space-y-4 flex-grow">
-        <li className="hover:text-blue-300">
-          <RouterLink
-            to="/"
-            className="flex items-center px-4 py-2 font-medium space-x-4"
-          >
-            <FaHome className="text-xl" />
-            {isOpen && <span>Home</span>}
-          </RouterLink>
-        </li>
-        <li className="hover:text-blue-300">
-          <RouterLink
-            to="/projects"
-            smooth={true}
-            duration={500}
-            className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
-          >
-            <FaProjectDiagram className="text-xl" />
-            {isOpen && <span>Projects</span>}
-          </RouterLink>
-        </li>
-        <li className="hover:text-blue-300">
-          <RouterLink
-            to="/trainings"
-            smooth={true}
-            duration={500}
-            className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
-          >
-            <FaChalkboardTeacher className="text-xl" />
-            {isOpen && <span>Trainings</span>}
-          </RouterLink>
-        </li>
-        <li className="hover:text-blue-300">
-          <RouterLink
-            to="/team"
-            smooth={true}
-            duration={500}
-            className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
-          >
-            <FaUserFriends className="text-xl" />
-            {isOpen && <span>Team</span>}
-          </RouterLink>
-        </li>
-        {user ? (
-          <li className="hover:text-blue-300">
-            <a
-              onClick={handleLogout} // Trigger the logout on click
-              className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
-            >
-<RouterLink
-            to="/logout"
-            smooth={true}
-            duration={500}
-            className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
-          >
-            {isOpen && <span>Logout</span>}
-          </RouterLink>
-            </a>
-          
-        </li>
+        {isOpen ? (
+          <ChevronLeft className="w-4 h-4 text-white" />
         ) : (
-          <li className="hover:text-blue-300">
+          <ChevronRight className="w-4 h-4 text-white" />
+        )}
+      </button>
+
+      <nav className="flex-grow mt-6">
+        <ul className="space-y-2 px-3">
+          {menuItems.map((item) => (
+            <li key={item.path}>
+              <RouterLink
+                to={item.path}
+                className={`flex items-center px-4 py-3 rounded-lg 
+                  transition-all duration-200 
+                  hover:bg-indigo-800/50 
+                  group
+                  ${window.location.pathname === item.path ? 'bg-indigo-800/70' : ''}`}
+              >
+                <item.icon className={`w-5 h-5 text-blue-200 group-hover:text-white 
+                  transition-all duration-200
+                  ${window.location.pathname === item.path ? 'text-white' : ''}`} 
+                />
+                {isOpen && (
+                  <span className={`ml-4 font-medium text-sm text-blue-100 group-hover:text-white
+                    transition-all duration-200
+                    ${window.location.pathname === item.path ? 'text-white' : ''}`}>
+                    {item.label}
+                  </span>
+                )}
+              </RouterLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="p-4 border-t border-indigo-800">
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center px-4 py-3 rounded-lg
+              transition-all duration-200
+              hover:bg-indigo-800/50 text-blue-200 hover:text-white
+              group`}
+          >
+            <LogOut className="w-5 h-5" />
+            {isOpen && <span className="ml-4 font-medium text-sm">Logout</span>}
+          </button>
+        ) : (
           <RouterLink
             to="/login"
-            smooth={true}
-            duration={500}
-            className="flex items-center px-4 py-2 cursor-pointer font-medium space-x-4"
+            className={`w-full flex items-center px-4 py-3 rounded-lg
+              transition-all duration-200
+              hover:bg-indigo-800/50 text-blue-200 hover:text-white
+              group`}
           >
-            {isOpen && <span>Login</span>}
+            <LogIn className="w-5 h-5" />
+            {isOpen && <span className="ml-4 font-medium text-sm">Login</span>}
           </RouterLink>
-        </li>
-        )}       
-      </ul>
+        )}
+      </div>
     </div>
   );
 };
+
+export default Sidebar;

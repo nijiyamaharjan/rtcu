@@ -52,7 +52,7 @@ function AppContent() {
 
       {/* Main Content */}
       <div
-        className={`flex-1 ${hideSidebarRoutes.includes(location.pathname) ? '' : 'p-6'} bg-gray-100 overflow-y-auto h-screen`}
+        className={`flex-1 ${hideSidebarRoutes.includes(location.pathname) ? '' : 'p-0'} bg-gray-100 overflow-y-auto h-screen`}
       >
         <Routes>
           {routes.map((route, index) => (
