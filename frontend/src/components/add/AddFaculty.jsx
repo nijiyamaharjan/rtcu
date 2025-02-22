@@ -9,7 +9,7 @@ export const AddFaculty = () => {
     expertiseid: '', // Store expertiseid instead of expertisename
     contactInfo: ''
   });
-
+  const [contactError, setContactError] = useState("");
   const [expertiseList, setExpertiseList] = useState([]);
 
 
@@ -31,10 +31,10 @@ export const AddFaculty = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFaculty({
-      ...faculty,
-      [name]: value
-    });
+    if (name === "contactInfo") {
+      validateContactInfo(value);
+    }
+    setFaculty({ ...faculty, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +59,15 @@ export const AddFaculty = () => {
       navigate('/team');
     } else {
       alert('Error adding faculty');
+    }
+  };
+
+  const validateContactInfo = (value) => {
+    const tenDigitPattern = /^\d{10}$/;
+    if (!tenDigitPattern.test(value)) {
+      setContactError("Phone number must be exactly 10 digits and contain only numbers.");
+    } else {
+      setContactError("");
     }
   };
 
@@ -148,9 +157,7 @@ export const AddFaculty = () => {
         </div>
 
         <div>
-          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
-            Contact Info
-          </label>
+          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">Contact Info</label>
           <input
             type="text"
             id="contactInfo"
@@ -158,7 +165,9 @@ export const AddFaculty = () => {
             value={faculty.contactInfo}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+            required
           />
+          {contactError && <p className="mt-1 text-sm text-red-600">{contactError}</p>}
         </div>
 
         <div>

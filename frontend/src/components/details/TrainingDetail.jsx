@@ -53,6 +53,15 @@ export const TrainingDetail = () => {
     }));
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     const response = await fetch(`http://localhost:5000/training/${id}`, {
@@ -101,10 +110,10 @@ export const TrainingDetail = () => {
           <strong>Title:</strong> {training.title}
         </span>
         <span>
-          <strong>Start Date:</strong> {training.startdate}
+          <strong>Start Date:</strong> {formatDate(training.startdate)}
         </span>
         <span>
-          <strong>End Date:</strong> {training.enddate}
+          <strong>End Date:</strong> {formatDate(training.enddate)}
         </span>
       </div>
 

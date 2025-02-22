@@ -11,6 +11,7 @@ export const AddStudent = () => {
         contactInfo: "",
     });
     const [expertiseList, setExpertiseList] = useState([]);
+    const [contactError, setContactError] = useState("");
 
     const fetchExpertise = async () => {
         try {
@@ -30,7 +31,9 @@ export const AddStudent = () => {
     // Updates the form fields when any input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log("Name:", name, "Value:", value);
+        if (name === "contactInfo") {
+            validateContactInfo(value);
+        }
         setStudent({
             ...student,
             [name]: value,
@@ -84,6 +87,17 @@ export const AddStudent = () => {
             } else {
                 alert("Failed to add expertise");
             }
+        }
+    };
+
+    const validateContactInfo = (value) => {
+        const tenDigitPattern = /^\d{10}$/;
+        if (!tenDigitPattern.test(value)) {
+            setContactError(
+                "Phone number must be exactly 10 digits and contain only numbers."
+            );
+        } else {
+            setContactError("");
         }
     };
 
@@ -178,6 +192,11 @@ export const AddStudent = () => {
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                     />
+                    {contactError && (
+                        <p className="mt-1 text-sm text-red-600">
+                            {contactError}
+                        </p>
+                    )}
                 </div>
 
                 {/* Submit Button */}

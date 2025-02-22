@@ -8,20 +8,21 @@ export const AddExpert = () => {
         expertiseid: "", // Store expertiseid instead of expertisename
         contactInfo: "",
     });
-    const navigate= useNavigate()
+    const navigate = useNavigate();
 
     const [expertiseList, setExpertiseList] = useState([]);
+    const [contactError, setContactError] = useState("");
 
-  const fetchExpertise = async () => {
-      try {
-          const response = await fetch("http://localhost:5000/expertise");
-          const data = await response.json();
-          console.log("Fetched expertise:", data); // Debugging
-          setExpertiseList(data);
-      } catch (err) {
-          console.error("Error fetching expertise", err);
-      }
-  };
+    const fetchExpertise = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/expertise");
+            const data = await response.json();
+            console.log("Fetched expertise:", data); // Debugging
+            setExpertiseList(data);
+        } catch (err) {
+            console.error("Error fetching expertise", err);
+        }
+    };
 
     useEffect(() => {
         fetchExpertise();
@@ -29,10 +30,10 @@ export const AddExpert = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setExpert({
-            ...expert,
-            [name]: value,
-        });
+        if (name === "contactInfo") {
+            validateContactInfo(value);
+        }
+        setExpert({ ...expert, [name]: value });
     };
 
     const handleSubmit = async (e) => {
@@ -54,33 +55,35 @@ export const AddExpert = () => {
                 expertiseid: "", // Reset expertiseid
                 contactInfo: "",
             });
-            navigate('/team')
+            navigate("/team");
         } else {
             alert("Error adding expert");
         }
     };
 
     const handleAddExpertise = async () => {
-      const newExpertise = prompt("Enter new expertise name");
-      if (newExpertise) {
-        const response = await fetch("http://localhost:5000/expertise", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ expertisename: newExpertise }),
-        });
-    
-        if (response.ok) {
-          const addedExpertise = await response.json();
-          // Add the new expertise to the state instead of re-fetching all expertise
-          setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
-        } else {
-          alert("Failed to add expertise");
+        const newExpertise = prompt("Enter new expertise name");
+        if (newExpertise) {
+            const response = await fetch("http://localhost:5000/expertise", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ expertisename: newExpertise }),
+            });
+
+            if (response.ok) {
+                const addedExpertise = await response.json();
+                // Add the new expertise to the state instead of re-fetching all expertise
+                setExpertiseList((prevExpertise) => [
+                    ...prevExpertise,
+                    addedExpertise,
+                ]);
+            } else {
+                alert("Failed to add expertise");
+            }
         }
-      }
     };
-    
 
     const handleDeleteExpertise = async (expertiseID) => {
         const confirmDelete = window.confirm(
@@ -106,9 +109,16 @@ export const AddExpert = () => {
         }
     };
 
-    
-
-    
+    const validateContactInfo = (value) => {
+        const tenDigitPattern = /^\d{10}$/;
+        if (!tenDigitPattern.test(value)) {
+            setContactError(
+                "Phone number must be exactly 10 digits and contain only numbers."
+            );
+        } else {
+            setContactError("");
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
@@ -149,7 +159,6 @@ export const AddExpert = () => {
                         required
                     />
                 </div>
-                
 
                 {/* Dropdown for Expertise */}
                 <div>
@@ -199,7 +208,13 @@ export const AddExpert = () => {
                         value={expert.contactInfo}
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        required
                     />
+                    {contactError && (
+                        <p className="mt-1 text-sm text-red-600">
+                            {contactError}
+                        </p>
+                    )}
                 </div>
 
                 <div>
