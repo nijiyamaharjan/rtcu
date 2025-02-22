@@ -31,8 +31,6 @@ The **RTCU Content Management System (CMS)** is designed to efficiently manage a
 | **Role** | Various roles assigned within a project. |
 | **Expertise** | Area of expertise of team members. |
 | **Training** | Records of training programs. |
-| **Training TeamMember** | Junction table linking team members to training programs. |
-| **TeamMember Student, Expert, Faculty** | Junction tables establishing relationships between team members and their respective categories. |
 
 ## Tech Stack
 - **Frontend**: React.js, Tailwind CSS
