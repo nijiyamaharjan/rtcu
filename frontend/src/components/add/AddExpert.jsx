@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const AddExpert = () => {
     const [expert, setExpert] = useState({
         expertID: "",
         name: "",
-        expertiseid: "", // Store expertiseid instead of expertisename
+        expertiseid: "",
         contactInfo: "",
     });
     const navigate = useNavigate();
@@ -13,51 +15,40 @@ export const AddExpert = () => {
     const [expertiseList, setExpertiseList] = useState([]);
     const [contactError, setContactError] = useState("");
 
-    const fetchExpertise = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/expertise");
-            const data = await response.json();
-            console.log("Fetched expertise:", data); // Debugging
-            setExpertiseList(data);
-        } catch (err) {
-            console.error("Error fetching expertise", err);
-        }
-    };
-
     useEffect(() => {
         fetchExpertise();
     }, []);
 
+    const fetchExpertise = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/expertise");
+            const data = await response.json();
+            setExpertiseList(data);
+        } catch (err) {
+            toast.error("Error fetching expertise");
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name === "contactInfo") {
-            validateContactInfo(value);
-        }
+        if (name === "contactInfo") validateContactInfo(value);
         setExpert({ ...expert, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const response = await fetch("http://localhost:5000/expert/create", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(expert),
         });
 
         if (response.ok) {
-            alert("Expert added successfully");
-            setExpert({
-                expertID: "",
-                name: "",
-                expertiseid: "", // Reset expertiseid
-                contactInfo: "",
-            });
+            toast.success("Expert added successfully!");
+            setExpert({ expertID: "", name: "", expertiseid: "", contactInfo: "" });
             navigate("/team");
         } else {
-            alert("Error adding expert");
+            toast.error("Error adding expert");
         }
     };
 
@@ -66,45 +57,31 @@ export const AddExpert = () => {
         if (newExpertise) {
             const response = await fetch("http://localhost:5000/expertise", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ expertisename: newExpertise }),
             });
 
             if (response.ok) {
                 const addedExpertise = await response.json();
-                // Add the new expertise to the state instead of re-fetching all expertise
-                setExpertiseList((prevExpertise) => [
-                    ...prevExpertise,
-                    addedExpertise,
-                ]);
+                setExpertiseList([...expertiseList, addedExpertise]);
+                toast.success("Expertise added successfully!");
             } else {
-                alert("Failed to add expertise");
+                toast.error("Failed to add expertise");
             }
         }
     };
 
     const handleDeleteExpertise = async (expertiseID) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this expertise?"
-        );
-        if (confirmDelete) {
-            const response = await fetch(
-                `http://localhost:5000/expertise/${expertiseID}`,
-                {
-                    method: "DELETE",
-                }
-            );
+        if (window.confirm("Are you sure you want to delete this expertise?")) {
+            const response = await fetch(`http://localhost:5000/expertise/${expertiseID}`, {
+                method: "DELETE",
+            });
 
             if (response.ok) {
-                setExpertiseList(
-                    expertiseList.filter(
-                        (item) => item.expertiseid !== expertiseID
-                    )
-                );
+                setExpertiseList(expertiseList.filter((item) => item.expertiseid !== expertiseID));
+                toast.success("Expertise deleted successfully!");
             } else {
-                alert("Failed to delete expertise");
+                toast.error("Failed to delete expertise");
             }
         }
     };
@@ -112,9 +89,7 @@ export const AddExpert = () => {
     const validateContactInfo = (value) => {
         const tenDigitPattern = /^\d{10}$/;
         if (!tenDigitPattern.test(value)) {
-            setContactError(
-                "Phone number must be exactly 10 digits and contain only numbers."
-            );
+            setContactError("Phone number must be exactly 10 digits and contain only numbers.");
         } else {
             setContactError("");
         }
@@ -125,10 +100,7 @@ export const AddExpert = () => {
             <h2 className="text-2xl font-semibold mb-6">Add Expert</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label
-                        htmlFor="expertID"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="expertID" className="block text-sm font-medium text-gray-700">
                         Expert ID
                     </label>
                     <input
@@ -143,10 +115,7 @@ export const AddExpert = () => {
                 </div>
 
                 <div>
-                    <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                         Name
                     </label>
                     <input
@@ -162,10 +131,7 @@ export const AddExpert = () => {
 
                 {/* Dropdown for Expertise */}
                 <div>
-                    <label
-                        htmlFor="expertiseid"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="expertiseid" className="block text-sm font-medium text-gray-700">
                         Expertise
                     </label>
                     <select
@@ -177,28 +143,18 @@ export const AddExpert = () => {
                     >
                         <option value="">Select Expertise</option>
                         {expertiseList.map((expertise) => (
-                            <option
-                                key={expertise.expertiseid}
-                                value={expertise.expertiseid}
-                            >
+                            <option key={expertise.expertiseid} value={expertise.expertiseid}>
                                 {expertise.expertisename}
                             </option>
                         ))}
                     </select>
-                    <button
-                        type="button"
-                        onClick={handleAddExpertise}
-                        className="mt-2 text-blue-600"
-                    >
+                    <button type="button" onClick={handleAddExpertise} className="mt-2 text-blue-600">
                         Add New Expertise
                     </button>
                 </div>
 
                 <div>
-                    <label
-                        htmlFor="contactInfo"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
                         Contact Info
                     </label>
                     <input
@@ -210,18 +166,11 @@ export const AddExpert = () => {
                         className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         required
                     />
-                    {contactError && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {contactError}
-                        </p>
-                    )}
+                    {contactError && <p className="mt-1 text-sm text-red-600">{contactError}</p>}
                 </div>
 
                 <div>
-                    <button
-                        type="submit"
-                        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md"
-                    >
+                    <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white rounded-md">
                         Add Expert
                     </button>
                 </div>

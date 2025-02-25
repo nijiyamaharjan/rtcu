@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AddTraining = () => {
     const navigate = useNavigate();
@@ -31,7 +33,7 @@ export const AddTraining = () => {
         });
 
         if (response.ok) {
-            alert('Training added successfully');
+            toast.success('Training added successfully');
             setTraining({
                 trainingID: '',
                 title: '',
@@ -40,7 +42,7 @@ export const AddTraining = () => {
             });
             navigate("/trainings");
         } else {
-            alert('Error adding training');
+            toast.error('Error adding training');
         }
     };
 

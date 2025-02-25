@@ -3,6 +3,8 @@ import { TeamMembers } from "../projects/TeamMembers";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ProjectDetail = () => {
     const { id: projectID } = useParams();
@@ -88,7 +90,7 @@ export const ProjectDetail = () => {
             setProject(updatedProject);
             setIsUpdateModalOpen(false);
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -106,7 +108,7 @@ export const ProjectDetail = () => {
             if (!response.ok) throw new Error("Failed to delete project");
             navigate("/projects");
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 

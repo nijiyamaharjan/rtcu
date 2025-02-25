@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import expertiseList from "../json/expertise.json"
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AddStudent = () => {
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ export const AddStudent = () => {
         });
 
         if (response.ok) {
-            alert("Student added successfully");
+            toast.success("Student added successfully");
             setStudent({
                 studentID: "",
                 name: "",
@@ -62,7 +63,7 @@ export const AddStudent = () => {
             });
             navigate("/team");
         } else {
-            alert("Error adding student");
+            toast.error("Error adding student");
         }
     };
 
@@ -85,7 +86,7 @@ export const AddStudent = () => {
                     addedExpertise,
                 ]);
             } else {
-                alert("Failed to add expertise");
+                toast.error("Failed to add expertise");
             }
         }
     };

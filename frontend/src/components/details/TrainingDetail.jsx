@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Modal({ isOpen, onClose, children }) {
     if (!isOpen) return null;
@@ -81,12 +83,12 @@ export const TrainingDetail = () => {
         });
 
         if (response.ok) {
-            alert("Training updated successfully!");
+            toast.success("Training updated successfully!");
             const updatedData = await response.json();
             setTraining(updatedData);
             setIsModalOpen(false);
         } else {
-            alert("Failed to update training.");
+            toast.error("Failed to update training.");
         }
     };
 
@@ -96,10 +98,10 @@ export const TrainingDetail = () => {
         });
 
         if (response.ok) {
-            alert("Training deleted successfully!");
+            toast.success("Training deleted successfully!");
             navigate("/trainings");
         } else {
-            alert("Failed to delete training.");
+            toast.error("Failed to delete training.");
         }
     };
 

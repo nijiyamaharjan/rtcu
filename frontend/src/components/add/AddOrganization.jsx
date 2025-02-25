@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AddOrganization = () => {
     const navigate = useNavigate();
@@ -47,7 +49,7 @@ export const AddOrganization = () => {
         );
 
         if (response.ok) {
-            alert("Organization added successfully");
+            toast.success("Organization added successfully");
             setOrganization({
                 organizationID: "",
                 name: "",
@@ -55,7 +57,7 @@ export const AddOrganization = () => {
             });
             navigate("/team"); // Navigate to the home page after successful form submission
         } else {
-            alert("Error adding organization");
+            toast.error("Error adding organization");
         }
     };
 

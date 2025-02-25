@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AddProject = () => {
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ export const AddProject = () => {
       if (!response.ok) {
         throw new Error('Error adding project');
       }
-      alert('Project added successfully');
+      toast.success('Project added successfully');
       setProject({
         projectID: '',
         title: '',
@@ -65,7 +67,7 @@ export const AddProject = () => {
       navigate('/projects');
     } catch (error) {
       console.error('Error submitting the project:', error);  // Log the error
-      alert('Failed to submit the project. Please try again.');
+      toast.error('Failed to submit the project. Please try again.');
     }
   };
 

@@ -17,6 +17,7 @@ import LoginPage from './components/Login';
 import { Projects } from './components/projects/Projects';
 import { Trainings } from './components/trainings/Trainings';
 import { Team } from './components/team/Team';
+import { ToastContainer } from "react-toastify";
 
 // Routes array
 const routes = [
@@ -46,6 +47,7 @@ function AppContent() {
   const hideSidebarRoutes = ['/login'];
 
   return (
+    
     <div className="flex">
       {/* Conditionally Render Sidebar */}
       {!hideSidebarRoutes.includes(location.pathname) && <Sidebar />}
@@ -66,8 +68,12 @@ function AppContent() {
 
 export default function App() {
   return (
+    <>
+        <ToastContainer position="top-right" autoClose={3000} />
+
     <BrowserRouter>
       <AppContent />
     </BrowserRouter>
+    </>
   );
 }

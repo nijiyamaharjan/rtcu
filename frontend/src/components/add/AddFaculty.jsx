@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AddFaculty = () => {
   const navigate = useNavigate();
@@ -12,9 +14,10 @@ export const AddFaculty = () => {
   const [contactError, setContactError] = useState("");
   const [expertiseList, setExpertiseList] = useState([]);
 
+  useEffect(() => {
+    fetchExpertise();
+  }, []);
 
-
-  // Fetch expertise from the server
   const fetchExpertise = async () => {
     try {
       const response = await fetch('http://localhost:5000/expertise');
@@ -24,10 +27,6 @@ export const AddFaculty = () => {
       console.error('Error fetching expertise', err);
     }
   };
-
-  useEffect(() => {
-    fetchExpertise();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +48,7 @@ export const AddFaculty = () => {
     });
 
     if (response.ok) {
-      alert('Faculty added successfully');
+      toast.success('Faculty added successfully');
       setFaculty({
         facultyID: '',
         name: '',
@@ -58,7 +57,7 @@ export const AddFaculty = () => {
       });
       navigate('/team');
     } else {
-      alert('Error adding faculty');
+      toast.error('Error adding faculty');
     }
   };
 
@@ -71,7 +70,6 @@ export const AddFaculty = () => {
     }
   };
 
-  // Add new expertise
   const handleAddExpertise = async () => {
     const newExpertise = prompt('Enter new expertise name');
     if (newExpertise) {
@@ -86,8 +84,9 @@ export const AddFaculty = () => {
       if (response.ok) {
         const addedExpertise = await response.json();
         setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
+        toast.success('Expertise added successfully');
       } else {
-        alert('Failed to add expertise');
+        toast.error('Failed to add expertise');
       }
     }
   };
@@ -126,9 +125,6 @@ export const AddFaculty = () => {
           />
         </div>
 
-        
-
-        {/* Dropdown for Expertise */}
         <div>
           <label htmlFor="expertiseid" className="block text-sm font-medium text-gray-700">
             Expertise

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Modal({ isOpen, onClose, children }) {
     if (!isOpen) return null;
@@ -98,7 +100,7 @@ export const FacultyDetail = () => {
         });
 
         if (response.ok) {
-            alert("Faculty updated successfully");
+            toast.success("Faculty updated successfully");
             setFaculty({
                 ...faculty,
                 ...updatedFaculty,
@@ -106,7 +108,7 @@ export const FacultyDetail = () => {
             setIsModalOpen(false);
             fetchFacultyData()
         } else {
-            alert("Error updating faculty");
+            toast.error("Error updating faculty");
         }
     };
 
@@ -120,14 +122,14 @@ export const FacultyDetail = () => {
             );
 
             if (response.ok) {
-                alert("Faculty deleted successfully");
+                toast.success("Faculty deleted successfully");
                 navigate("/team"); // Redirect to home page after deletion
             } else {
-                alert("Error deleting faculty");
+                toast.error("Error deleting faculty");
             }
         } catch (error) {
             console.error("Delete error: ", error);
-            alert("Error deleting faculty");
+            toast.error("Error deleting faculty");
         }
     };
 
@@ -154,7 +156,7 @@ export const FacultyDetail = () => {
                     addedExpertise,
                 ]);
             } else {
-                alert("Failed to add expertise");
+                toast.error("Failed to add expertise");
             }
         }
     };

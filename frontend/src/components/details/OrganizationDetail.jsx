@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "./../../hooks/useAuth";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Modal({ isOpen, onClose, children }) {
     if (!isOpen) return null;
@@ -79,7 +81,7 @@ export const OrganizationDetail = () => {
         );
 
         if (response.ok) {
-            alert("Organization updated successfully");
+            toast.success("Organization updated successfully");
             setOrganization({
                 ...organization,
                 ...updatedOrganization,
@@ -87,7 +89,7 @@ export const OrganizationDetail = () => {
             setIsModalOpen(false);
             fetchOrganizationData()
         } else {
-            alert("Error updating organization");
+            toast.error("Error updating organization");
         }
     };
 
@@ -100,10 +102,10 @@ export const OrganizationDetail = () => {
         );
 
         if (response.ok) {
-            alert("Organization deleted successfully");
+            toast.success("Organization deleted successfully");
             navigate("/team"); // Redirect to home page after deletion
         } else {
-            alert("Error deleting organization");
+            toast.error("Error deleting organization");
         }
     };
 

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Modal({ isOpen, onClose, children }) {
     if (!isOpen) return null;
@@ -92,12 +94,12 @@ export const StudentDetail = () => {
         });
 
         if (response.ok) {
-            alert("Student updated successfully");
+            toast.success("Student updated successfully");
             setStudent({ ...student, ...updatedStudent });
             setIsModalOpen(false)
             fetchStudentData()
         } else {
-            alert("Error updating student");
+            toast.error("Error updating student");
         }
     };
 
@@ -108,10 +110,10 @@ export const StudentDetail = () => {
         });
 
         if (response.ok) {
-            alert("Student deleted successfully");
+            toast.success("Student deleted successfully");
             navigate("/team"); // Redirect to home page after deletion
         } else {
-            alert("Error deleting student");
+            toast.error("Error deleting student");
         }
     };
 
@@ -139,7 +141,7 @@ export const StudentDetail = () => {
                 ]);
                 setIsModalOpen(false);
             } else {
-                alert("Failed to add expertise");
+                toast.error("Failed to add expertise");
             }
         }
     };

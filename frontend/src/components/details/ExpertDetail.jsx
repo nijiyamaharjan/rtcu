@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Modal({ isOpen, onClose, children }) {
     if (!isOpen) return null;
@@ -99,7 +101,7 @@ export const ExpertDetail = () => {
         });
 
         if (response.ok) {
-            alert("Expert updated successfully");
+            toast.success("Expert updated successfully");
             setExpert({
                 ...expert,
                 ...updatedExpert,
@@ -107,7 +109,7 @@ export const ExpertDetail = () => {
             setIsModalOpen(false);
             fetchExpertData()
         } else {
-            alert("Error updating expert");
+            toast.error("Error updating expert");
         }
     };
 
@@ -117,10 +119,10 @@ export const ExpertDetail = () => {
         });
 
         if (response.ok) {
-            alert("Expert deleted successfully");
+            toast.success("Expert deleted successfully");
             navigate("/team"); // Redirect to home page after deletion
         } else {
-            alert("Error deleting expert");
+            toast.error("Error deleting expert");
         }
     };
 
@@ -143,7 +145,7 @@ export const ExpertDetail = () => {
                     addedExpertise,
                 ]);
             } else {
-                alert("Failed to add expertise");
+                toast.error("Failed to add expertise");
             }
         }
     };

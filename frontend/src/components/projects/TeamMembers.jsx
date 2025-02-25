@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const TeamMembers = ({ projectID }) => {
     const [allTeam, setAllTeam] = useState({
@@ -130,7 +132,7 @@ export const TeamMembers = ({ projectID }) => {
                 const addedRole = await response.json();
                 setRoles((prevRoles) => [...prevRoles, addedRole]);
             } else {
-                alert("Failed to add role");
+                toast.error("Failed to add role");
             }
         }
     };
@@ -150,7 +152,7 @@ export const TeamMembers = ({ projectID }) => {
             if (response.ok) {
                 setRoles(roles.filter((item) => item.roleid !== roleID));
             } else {
-                alert("Failed to delete role");
+                toast.error("Failed to delete role");
             }
         }
     };
