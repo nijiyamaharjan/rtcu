@@ -1,12 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+
+function Modal({ isOpen, onClose, children }) {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 relative">
+                <button
+                    onClick={onClose}
+                    className="absolute top-2 right-2 text-gray-500"
+                >
+                    &times;
+                </button>
+                {children}
+            </div>
+        </div>
+    );
+}
 
 export const StudentDetail = () => {
     const { id } = useParams(); // Get the studentID from the route parameter
     const navigate = useNavigate(); // To navigate after delete or update
     const [student, setStudent] = useState(null);
     const [expertiseList, setExpertiseList] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [updatedStudent, setUpdatedStudent] = useState({
         name: "",
@@ -17,20 +36,7 @@ export const StudentDetail = () => {
 
     useEffect(() => {
         // Fetch the student data based on studentID
-        const fetchStudentData = async () => {
-            const response = await fetch(`http://localhost:5000/student/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                setStudent(data);
-                setUpdatedStudent({
-                    name: data.name,
-                    expertiseid: data.expertiseid,
-                    contactInfo: data.contactInfo,
-                });
-            } else {
-                console.error("Error fetching student data");
-            }
-        };
+
 
         // Fetch expertise options
         const fetchExpertise = async () => {
@@ -49,6 +55,21 @@ export const StudentDetail = () => {
         fetchStudentData();
         fetchExpertise();
     }, [id]);
+
+    const fetchStudentData = async () => {
+        const response = await fetch(`http://localhost:5000/student/${id}`);
+        if (response.ok) {
+            const data = await response.json();
+            setStudent(data);
+            setUpdatedStudent({
+                name: data.name,
+                expertiseid: data.expertiseid,
+                contactInfo: data.contactinfo,
+            });
+        } else {
+            console.error("Error fetching student data");
+        }
+    };
 
     // Handle form input changes
     const handleUpdateChange = (e) => {
@@ -73,6 +94,8 @@ export const StudentDetail = () => {
         if (response.ok) {
             alert("Student updated successfully");
             setStudent({ ...student, ...updatedStudent });
+            setIsModalOpen(false)
+            fetchStudentData()
         } else {
             alert("Error updating student");
         }
@@ -99,33 +122,34 @@ export const StudentDetail = () => {
     const handleAddExpertise = async () => {
         const newExpertise = prompt("Enter new expertise name");
         if (newExpertise) {
-          const response = await fetch("http://localhost:5000/expertise", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ expertisename: newExpertise }),
-          });
-      
-          if (response.ok) {
-            const addedExpertise = await response.json();
-            // Add the new expertise to the state instead of re-fetching all expertise
-            setExpertiseList((prevExpertise) => [...prevExpertise, addedExpertise]);
-          } else {
-            alert("Failed to add expertise");
-          }
+            const response = await fetch("http://localhost:5000/expertise", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ expertisename: newExpertise }),
+            });
+
+            if (response.ok) {
+                const addedExpertise = await response.json();
+                // Add the new expertise to the state instead of re-fetching all expertise
+                setExpertiseList((prevExpertise) => [
+                    ...prevExpertise,
+                    addedExpertise,
+                ]);
+                setIsModalOpen(false);
+            } else {
+                alert("Failed to add expertise");
+            }
         }
-      };
+    };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+        <div className="max-w-4xl pl-8 pr-8 py-8">
             <h2 className="text-2xl font-semibold mb-6">{student.name}</h2>
-            <div className="grid grid-cols-2 gap-y-2 mt-2 text-sm">
+            <div className="grid grid-cols-1 gap-y-2 mt-2 text-sm">
                 <span>
                     <strong>Student ID:</strong> {student.studentid}
-                </span>
-                <span>
-                    <strong>Name:</strong> {student.name}
                 </span>
                 <span>
                     <strong>Expertise:</strong> {student.expertisename}
@@ -136,106 +160,119 @@ export const StudentDetail = () => {
             </div>
 
             {user && (
-                <>
-                    {/* Update Form */}
-                    <h3 className="text-xl font-semibold mt-8 mb-4">
-                        Update Student
-                    </h3>
-                    <form onSubmit={handleUpdateSubmit} className="space-y-6">
-                        {/* Name */}
-                        <div>
-                            <label
-                                htmlFor="name"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={updatedStudent.name}
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            />
-                        </div>
+                <div className="pt-6">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                        title="Update Expert"
+                    >
+                        <Pencil size={20} />
+                    </button>
 
-                        {/* Expertise Dropdown */}
-                        <div>
-                            <label
-                                htmlFor="expertise"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Expertise
-                            </label>
-                            <button
-                                type="button"
-                                onClick={handleAddExpertise}
-                                className="mt-2 text-blue-600"
-                            >
-                                Add New Expertise
-                            </button>
-                            <select
-                                id="expertise"
-                                name="expertiseid" // Use expertiseID instead of expertise
-                                value={updatedStudent.expertiseid} // Bind to expertiseID, not expertisename
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="" disabled>
-                                    Select expertise
-                                </option>
-                                {expertiseList.map((expertise) => (
-                                    <option
-                                        key={expertise.expertiseid}
-                                        value={expertise.expertiseid}
-                                    >
-                                        {expertise.expertisename}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Contact Info */}
-                        <div>
-                            <label
-                                htmlFor="contactInfo"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Contact Info
-                            </label>
-                            <input
-                                type="text"
-                                id="contactInfo"
-                                name="contactInfo"
-                                value={updatedStudent.contactInfo}
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            />
-                        </div>
-
-                        {/* Update Button */}
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md"
-                            >
-                                Update Student
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* Delete Button */}
-                    <div className="mt-6">
-                        <button
-                            onClick={handleDelete}
-                            className="w-full py-2 px-4 bg-red-600 text-white rounded-md"
+                    <button
+                        onClick={handleDelete}
+                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                        title="Delete Expert"
+                    >
+                        <Trash2 size={20} />
+                    </button>
+                </div>
+            )}
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                {/* Update Form */}
+                <h3 className="text-xl font-semibold mt-8 mb-4">
+                    Update Student
+                </h3>
+                <form onSubmit={handleUpdateSubmit} className="space-y-6">
+                    {/* Name */}
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-700"
                         >
-                            Delete Student
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={updatedStudent.name}
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        />
+                    </div>
+
+                    {/* Expertise Dropdown */}
+                    <div>
+                        <label
+                            htmlFor="expertise"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Expertise
+                        </label>
+                        <button
+                            type="button"
+                            onClick={handleAddExpertise}
+                            className="mt-2 text-blue-600"
+                        >
+                            Add New Expertise
+                        </button>
+                        <select
+                            id="expertise"
+                            name="expertiseid" // Use expertiseID instead of expertise
+                            value={updatedStudent.expertiseid} // Bind to expertiseID, not expertisename
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        >
+                            <option value="" disabled>
+                                Select expertise
+                            </option>
+                            {expertiseList.map((expertise) => (
+                                <option
+                                    key={expertise.expertiseid}
+                                    value={expertise.expertiseid}
+                                >
+                                    {expertise.expertisename}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div>
+                        <label
+                            htmlFor="contactInfo"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Contact Info
+                        </label>
+                        <input
+                            type="text"
+                            id="contactInfo"
+                            name="contactInfo"
+                            value={updatedStudent.contactInfo}
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-4">
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(false)}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+                        >
+                            Save Changes
                         </button>
                     </div>
-                </>
-            )}
+                </form>
+            </Modal>
         </div>
     );
 };

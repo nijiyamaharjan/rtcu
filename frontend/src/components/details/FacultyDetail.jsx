@@ -1,6 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+
+function Modal({ isOpen, onClose, children }) {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 relative">
+                <button
+                    onClick={onClose}
+                    className="absolute top-2 right-2 text-gray-500"
+                >
+                    &times;
+                </button>
+                {children}
+            </div>
+        </div>
+    );
+}
 
 export const FacultyDetail = () => {
     const { id } = useParams(); // Get the facultyID from the route parameter
@@ -8,6 +26,7 @@ export const FacultyDetail = () => {
     const [faculty, setFaculty] = useState(null);
     const [expertiseList, setExpertiseList] = useState([]);
     const user = useAuth();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Handle input changes for update form
     const [updatedFaculty, setUpdatedFaculty] = useState({
@@ -18,26 +37,7 @@ export const FacultyDetail = () => {
 
     useEffect(() => {
         // Fetch the faculty data based on facultyID
-        const fetchFacultyData = async () => {
-            try {
-                const response = await fetch(
-                    `http://localhost:5000/faculty/${id}`
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    setFaculty(data);
-                    setUpdatedFaculty({
-                        name: data.name,
-                        expertiseid: data.expertiseid, // Use expertiseID from the fetched data
-                        contactInfo: data.contactinfo,
-                    });
-                } else {
-                    console.error("Error fetching faculty data");
-                }
-            } catch (error) {
-                console.error("Network error: ", error);
-            }
-        };
+
 
         // Fetch expertise options
         const fetchExpertise = async () => {
@@ -57,6 +57,26 @@ export const FacultyDetail = () => {
         fetchExpertise();
     }, [id]); // Fetch data when the id changes
 
+    const fetchFacultyData = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/faculty/${id}`
+            );
+            if (response.ok) {
+                const data = await response.json();
+                setFaculty(data);
+                setUpdatedFaculty({
+                    name: data.name,
+                    expertiseid: data.expertiseid, // Use expertiseID from the fetched data
+                    contactInfo: data.contactinfo,
+                });
+            } else {
+                console.error("Error fetching faculty data");
+            }
+        } catch (error) {
+            console.error("Network error: ", error);
+        }
+    };
     const handleUpdateChange = (e) => {
         const { name, value } = e.target;
         setUpdatedFaculty({
@@ -79,10 +99,12 @@ export const FacultyDetail = () => {
 
         if (response.ok) {
             alert("Faculty updated successfully");
-            setExpert({
-                ...expert,
-                ...updatedExpert,
+            setFaculty({
+                ...faculty,
+                ...updatedFaculty,
             });
+            setIsModalOpen(false);
+            fetchFacultyData()
         } else {
             alert("Error updating faculty");
         }
@@ -138,18 +160,15 @@ export const FacultyDetail = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="max-w-4xl pl-8 pr-8 py-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">
                 {faculty.name}
             </h2>
 
             {/* Faculty Details */}
-            <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-600">
+            <div className="grid grid-cols-1 gap-y-4 text-sm text-gray-600">
                 <span>
                     <strong>Faculty ID:</strong> {faculty.facultyid}
-                </span>
-                <span>
-                    <strong>Name:</strong> {faculty.name}
                 </span>
                 <span>
                     <strong>Expertise:</strong> {faculty.expertisename}
@@ -160,102 +179,116 @@ export const FacultyDetail = () => {
             </div>
 
             {user && (
-                <>
-                    {/* Update Form */}
-                    <h3 className="text-xl font-semibold text-gray-800 mt-8 mb-4">
-                        Update Faculty
-                    </h3>
-                    <form onSubmit={handleUpdateSubmit} className="space-y-6">
-                        <div>
-                            <label
-                                htmlFor="name"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={updatedFaculty.name}
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
-                            />
-                        </div>
+                <div className="pt-6">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                        title="Update Expert"
+                    >
+                        <Pencil size={20} />
+                    </button>
 
-                        <div>
-                            <label
-                                htmlFor="expertise"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Expertise
-                            </label>
-                            <button
-                                type="button"
-                                onClick={handleAddExpertise}
-                                className="mt-2 text-blue-600"
-                            >
-                                Add New Expertise
-                            </button>
-                            <select
-                                id="expertise"
-                                name="expertiseid" // Use expertiseID instead of expertise
-                                value={updatedFaculty.expertiseid} // Bind to expertiseID, not expertisename
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="" disabled>
-                                    Select expertise
-                                </option>
-                                {expertiseList.map((expertise) => (
-                                    <option
-                                        key={expertise.expertiseid}
-                                        value={expertise.expertiseid}
-                                    >
-                                        {expertise.expertisename}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="contactInfo"
-                                className="block text-sm font-medium text-gray-700"
-                            >
-                                Contact Info
-                            </label>
-                            <input
-                                type="text"
-                                id="contactInfo"
-                                name="contactInfo"
-                                value={updatedFaculty.contactInfo}
-                                onChange={handleUpdateChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
-                            />
-                        </div>
-
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                            >
-                                Update Faculty
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* Delete Button */}
-                    <div className="mt-6">
-                        <button
-                            onClick={handleDelete}
-                            className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    <button
+                        onClick={handleDelete}
+                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                        title="Delete Expert"
+                    >
+                        <Trash2 size={20} />
+                    </button>
+                </div>
+            )}
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                {/* Update Form */}
+                <h3 className="text-xl font-semibold text-gray-800 mt-8 mb-4">
+                    Update Faculty
+                </h3>
+                <form onSubmit={handleUpdateSubmit} className="space-y-6">
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-700"
                         >
-                            Delete Faculty
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={updatedFaculty.name}
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="expertise"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Expertise
+                        </label>
+                        <button
+                            type="button"
+                            onClick={handleAddExpertise}
+                            className="mt-2 text-blue-600"
+                        >
+                            Add New Expertise
+                        </button>
+                        <select
+                            id="expertise"
+                            name="expertiseid" // Use expertiseID instead of expertise
+                            value={updatedFaculty.expertiseid} // Bind to expertiseID, not expertisename
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        >
+                            <option value="" disabled>
+                                Select expertise
+                            </option>
+                            {expertiseList.map((expertise) => (
+                                <option
+                                    key={expertise.expertiseid}
+                                    value={expertise.expertiseid}
+                                >
+                                    {expertise.expertisename}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="contactInfo"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Contact Info
+                        </label>
+                        <input
+                            type="text"
+                            id="contactInfo"
+                            name="contactInfo"
+                            value={updatedFaculty.contactInfo}
+                            onChange={handleUpdateChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-200"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-4">
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(false)}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+                        >
+                            Save Changes
                         </button>
                     </div>
-                </>
-            )}
+                </form>
+            </Modal>
         </div>
     );
 };
