@@ -25,11 +25,12 @@ export const Home = () => {
   ];
 
   const objectives = [
-    "To promote research culture in engineering education",
-    "To enhance the quality of engineering education through practical training",
-    "To provide expert consultancy services to industries and organizations",
-    "To establish linkages with national and international research institutions",
-    "To develop innovative solutions for engineering challenges"
+    "To conduct or facilitate research and study.",
+    "To conduct or facilitate training.",
+    "To provide testing and other technical assistance.",
+    "To provide consultancy services at governmental, non-governmental, private, national, and international levels.",
+    "To conduct research in collaboration with research centers and universities within and outside the country.",
+    "To perform other tasks as designated by the profession and department."
   ];
 
   return (
