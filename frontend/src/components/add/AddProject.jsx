@@ -77,7 +77,7 @@ export const AddProject = () => {
           { label: 'Project ID', name: 'projectID', type: 'text', required: true },
           { label: 'Title', name: 'title', type: 'text', required: true },
           { label: 'Description', name: 'description', type: 'textarea' },
-          { label: 'Budget', name: 'budget', type: 'text' },
+          { label: 'Budget (in Rs.)', name: 'budget', type: 'text' },
           { label: 'Start Date', name: 'startDate', type: 'date' },
           { label: 'End Date', name: 'endDate', type: 'date' }
         ].map((field) => (

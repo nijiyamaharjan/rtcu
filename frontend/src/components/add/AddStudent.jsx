@@ -28,23 +28,42 @@ const roleOptions = [
 ];
 
 export const AddStudent = () => {
-  const navigate = useNavigate();
-  const [student, setStudent] = useState({
-    studentID: '',
-    name: '',
-    expertise: '',
-    role: '',
-    contactInfo: '',
-  });
-
-  // Updates the form fields when any input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setStudent({
-      ...student,
-      [name]: value,
+    const navigate = useNavigate();
+    const [student, setStudent] = useState({
+        studentID: "",
+        name: "",
+        expertiseid: "",
+        contactInfo: "",
     });
-  };
+    const [expertiseList, setExpertiseList] = useState([]);
+    const [contactError, setContactError] = useState("");
+
+    const fetchExpertise = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/expertise");
+            const data = await response.json();
+            console.log("Fetched expertise:", data); // Debugging
+            setExpertiseList(data);
+        } catch (err) {
+            console.error("Error fetching expertise", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchExpertise();
+    }, []);
+
+    // Updates the form fields when any input changes
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === "contactInfo") {
+            validateContactInfo(value);
+        }
+        setStudent({
+            ...student,
+            [name]: value,
+        });
+    };
 
   // Handles form submission
   const handleSubmit = async (e) => {
@@ -58,20 +77,54 @@ export const AddStudent = () => {
       body: JSON.stringify(student),
     });
 
-    if (response.ok) {
-      alert('Student added successfully');
-      setStudent({
-        studentID: '',
-        name: '',
-        expertise: '',
-        role: '',
-        contactInfo: '',
-      });
-      navigate('/');
-    } else {
-      alert('Error adding student');
-    }
-  };
+        if (response.ok) {
+            alert("Student added successfully");
+            setStudent({
+                studentID: "",
+                name: "",
+                expertiseid: "",
+                contactInfo: "",
+            });
+            navigate("/team");
+        } else {
+            alert("Error adding student");
+        }
+    };
+
+    const handleAddExpertise = async () => {
+        const newExpertise = prompt("Enter new expertise name");
+        if (newExpertise) {
+            const response = await fetch("http://localhost:5000/expertise", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ expertisename: newExpertise }),
+            });
+
+            if (response.ok) {
+                const addedExpertise = await response.json();
+                // Add the new expertise to the state instead of re-fetching all expertise
+                setExpertiseList((prevExpertise) => [
+                    ...prevExpertise,
+                    addedExpertise,
+                ]);
+            } else {
+                alert("Failed to add expertise");
+            }
+        }
+    };
+
+    const validateContactInfo = (value) => {
+        const tenDigitPattern = /^\d{10}$/;
+        if (!tenDigitPattern.test(value)) {
+            setContactError(
+                "Phone number must be exactly 10 digits and contain only numbers."
+            );
+        } else {
+            setContactError("");
+        }
+    };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
@@ -157,20 +210,28 @@ export const AddStudent = () => {
           </select>
         </div>
 
-        {/* Contact Info */}
-        <div>
-          <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700">
-            Contact Info
-          </label>
-          <input
-            type="text"
-            id="contactInfo"
-            name="contactInfo"
-            value={student.contactInfo}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
+                {/* Contact Info */}
+                <div>
+                    <label
+                        htmlFor="contactInfo"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Contact Info
+                    </label>
+                    <input
+                        type="text"
+                        id="contactInfo"
+                        name="contactInfo"
+                        value={student.contactInfo}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                    />
+                    {contactError && (
+                        <p className="mt-1 text-sm text-red-600">
+                            {contactError}
+                        </p>
+                    )}
+                </div>
 
         {/* Submit Button */}
         <div>

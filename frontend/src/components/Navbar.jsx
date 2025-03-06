@@ -2,20 +2,20 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useState } from 'react';
 import { 
   Home,
-  ProjectorIcon,
+  ProjectorIcon as Projects,
   Users,
-  GraduationCap,
+  GraduationCap as Trainings,
   LogOut,
   LogIn,
-  ChevronLeft,
-  ChevronRight
+  Menu,
+  X
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import { useLogout } from '../hooks/useLogout';
 import { useNavigate } from 'react-router-dom';
 
-export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+export const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const user = useAuth();
   const logout = useLogout();
   const navigate = useNavigate();
@@ -27,86 +27,119 @@ export const Sidebar = () => {
 
   const menuItems = [
     { path: '/', icon: Home, label: 'Home' },
-    { path: '/projects', icon: ProjectorIcon, label: 'Projects' },
-    { path: '/trainings', icon: GraduationCap, label: 'Trainings' },
+    { path: '/projects', icon: Projects, label: 'Projects' },
+    { path: '/trainings', icon: Trainings, label: 'Trainings' },
     { path: '/team', icon: Users, label: 'Team' },
   ];
 
+  const isActive = (path) => window.location.pathname === path;
+
   return (
-    <div
-      className={`${
-        isOpen ? 'w-64' : 'w-20'
-      } bg-indigo-900 text-white h-screen transition-all duration-300 flex flex-col relative`}
-    >
-      <button
-        className={`absolute -right-3 top-6 bg-indigo-600 rounded-full p-1.5 
-          hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 
-          focus:ring-offset-2 transition-all duration-300 shadow-lg`}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? (
-          <ChevronLeft className="w-4 h-4 text-white" />
-        ) : (
-          <ChevronRight className="w-4 h-4 text-white" />
-        )}
-      </button>
+    <>
+      {/* Desktop navbar */}
+      <header className="bg-indigo-900 text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-10">
+          <div className="flex justify-center h-14">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-10">
+              {menuItems.map((item) => (
+                <RouterLink
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium
+                    ${isActive(item.path) ? 'bg-indigo-800 text-white' : 'text-blue-100 hover:bg-indigo-800 hover:text-white'}`}
+                >
+                  <item.icon className="w-5 h-5 mr-2" />
+                  {item.label}
+                </RouterLink>
+              ))}
+            </div>
 
-      <nav className="flex-grow mt-6">
-        <ul className="space-y-2 px-3">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <RouterLink
-                to={item.path}
-                className={`flex items-center px-4 py-3 rounded-lg 
-                  transition-all duration-200 
-                  hover:bg-indigo-800/50 
-                  group
-                  ${window.location.pathname === item.path ? 'bg-indigo-800/70' : ''}`}
+            {/* Auth Section */}
+            <div className="hidden md:flex items-center">
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium
+                    text-blue-100 hover:bg-indigo-800 hover:text-white ml-4"
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  Logout
+                </button>
+              ) : (
+                <RouterLink
+                  to="/login"
+                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium
+                    text-blue-100 hover:bg-indigo-800 hover:text-white ml-4"
+                >
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Login
+                </RouterLink>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="flex md:hidden items-center">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 rounded-md hover:bg-indigo-800"
               >
-                <item.icon className={`w-5 h-5 text-blue-200 group-hover:text-white 
-                  transition-all duration-200
-                  ${window.location.pathname === item.path ? 'text-white' : ''}`} 
-                />
-                {isOpen && (
-                  <span className={`ml-4 font-medium text-sm text-blue-100 group-hover:text-white
-                    transition-all duration-200
-                    ${window.location.pathname === item.path ? 'text-white' : ''}`}>
-                    {item.label}
-                  </span>
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
                 )}
-              </RouterLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <div className="p-4 border-t border-indigo-800">
-        {user ? (
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center px-4 py-3 rounded-lg
-              transition-all duration-200
-              hover:bg-indigo-800/50 text-blue-200 hover:text-white
-              group`}
-          >
-            <LogOut className="w-5 h-5" />
-            {isOpen && <span className="ml-4 font-medium text-sm">Logout</span>}
-          </button>
-        ) : (
-          <RouterLink
-            to="/login"
-            className={`w-full flex items-center px-4 py-3 rounded-lg
-              transition-all duration-200
-              hover:bg-indigo-800/50 text-blue-200 hover:text-white
-              group`}
-          >
-            <LogIn className="w-5 h-5" />
-            {isOpen && <span className="ml-4 font-medium text-sm">Login</span>}
-          </RouterLink>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {menuItems.map((item) => (
+                <RouterLink
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium
+                    ${isActive(item.path) ? 'bg-indigo-800 text-white' : 'text-blue-100 hover:bg-indigo-800 hover:text-white'}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <item.icon className="w-5 h-5 mr-2" />
+                  {item.label}
+                </RouterLink>
+              ))}
+              
+              {user ? (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 rounded-md text-sm font-medium
+                    text-blue-100 hover:bg-indigo-800 hover:text-white"
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  Logout
+                </button>
+              ) : (
+                <RouterLink
+                  to="/login"
+                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium
+                    text-blue-100 hover:bg-indigo-800 hover:text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Login
+                </RouterLink>
+              )}
+            </div>
+          </div>
         )}
-      </div>
-    </div>
+      </header>
+    </>
   );
 };
 
-export default Sidebar;
+export default Navbar;

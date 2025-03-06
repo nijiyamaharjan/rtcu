@@ -11,7 +11,6 @@ export const TeamMembers = ({ projectID }) => {
     const [teamMembers, setTeamMembers] = useState([]);
     const [selectedMember, setSelectedMember] = useState(null);
     const [contactInfo, setContactInfo] = useState("");
-    const [memberid, setMemberID] = useState("");
     const [roleid, setRoleID] = useState("");
     const [roles, setRoles] = useState([]);
     const user = useAuth();
@@ -91,7 +90,6 @@ export const TeamMembers = ({ projectID }) => {
             if (response.ok) {
                 setSelectedMember(null);
                 setContactInfo("");
-                setMemberID("");
                 setRoleID("");
                 fetchProjectTeamMembers(); // Refresh the project members list
             }
@@ -200,17 +198,6 @@ export const TeamMembers = ({ projectID }) => {
             {user && <>
                 <h3 className="text-2xl font-semibold mb-4">Add Team Member</h3>
             <div className="flex items-center space-x-4">
-                <div className="flex-1">
-                    <label htmlFor="memberid" className="block text-sm font-medium text-gray-700">Member ID</label>
-                    <input
-                        id="memberid"
-                        type="text"
-                        value={memberid}
-                        onChange={(e) => setMemberID(e.target.value)}
-                        placeholder="Enter Member ID"
-                        className="mt-1 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                </div>
 
                 <div className="flex-1">
                     <label htmlFor="member" className="block text-sm font-medium text-gray-700">Select Member</label>
