@@ -12,8 +12,6 @@ export const AddFaculty = () => {
 
   const [expertiseList, setExpertiseList] = useState([]);
 
-
-
   // Fetch expertise from the server
   const fetchExpertise = async () => {
     try {
