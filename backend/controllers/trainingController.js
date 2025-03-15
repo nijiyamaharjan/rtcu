@@ -11,14 +11,14 @@ const getAllTrainings = async (req, res) => {
 }
 
 const createTraining = async (req, res) => {
-    const { trainingID, title, startDate, endDate } = req.body;
+    const { trainingID, title, startDate, endDate, description } = req.body;
     try {
         const query = `
-            INSERT INTO Training (trainingID, title, startDate, endDate)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO Training (trainingID, title, startDate, endDate, description)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
-        const values = [ trainingID, title, startDate, endDate];
+        const values = [ trainingID, title, startDate, endDate, description];
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -57,10 +57,10 @@ const deleteTraining = async (req, res) => {
 
 const updateTraining = async (req, res) => {
     const { id } = req.params; 
-    const { trainingID, title, startDate, endDate } = req.body; 
+    const { trainingID, title, startDate, endDate, description } = req.body; 
 
     if (!title && !startDate && !endDate) {
-        return res.status(400).json({ error: 'At least one field (title, startDate, endDate) is required to update.' });
+        return res.status(400).json({ error: 'At least one field (title, startDate, endDate, description) is required to update.' });
     }
 
     try {
@@ -79,6 +79,10 @@ const updateTraining = async (req, res) => {
         if (endDate) {
             updates.push(`endDate = $${updates.length + 1}`);
             values.push(endDate);
+        }
+        if (description) {
+            updates.push(`description = $${updates.length + 1}`);
+            values.push(description);
         }
 
         values.push(id);

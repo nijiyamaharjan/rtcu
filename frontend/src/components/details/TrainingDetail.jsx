@@ -30,6 +30,7 @@ export const TrainingDetail = () => {
         title: "",
         startdate: "",
         enddate: "",
+        description: ""
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const user = useAuth();
@@ -238,7 +239,7 @@ export const TrainingDetail = () => {
                     <strong>End Date:</strong> {formatDate(training.enddate)}
                 </span>
             </div>
-            <p className="mt-4 text-gray-600">heyy</p>
+            <p className="mt-4 text-gray-600">{training.description}</p>
 
             {user && (
                 <div className="pt-6">
@@ -307,6 +308,23 @@ export const TrainingDetail = () => {
                             id="enddate"
                             name="enddate"
                             value={updatedTraining.enddate}
+                            onChange={handleChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        />
+                        
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="description"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Description
+                        </label>
+                        <input
+                            type="textarea"
+                            id="description"
+                            name="description"
+                            value={updatedTraining.description}
                             onChange={handleChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         />
