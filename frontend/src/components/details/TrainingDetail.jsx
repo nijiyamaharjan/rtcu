@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import { Loader2, Pencil, Users, Trash2, X } from "lucide-react";
+import { Loader2, Pencil, Users, Trash2, X, Download } from "lucide-react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -38,6 +38,9 @@ export const TrainingDetail = () => {
     const [trainingAttachments, setTrainingAttachments] = useState([]);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [uploadingAttachment, setUploadingAttachment] = useState(false);
+    // New state for image modal
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchTrainingData = async () => {
@@ -89,6 +92,35 @@ export const TrainingDetail = () => {
             fetchTrainingMedia();
         }
     }, [id]);
+
+    // New function to open the image modal
+    const openImageModal = (image) => {
+        setSelectedImage(image);
+        setIsImageModalOpen(true);
+    };
+
+    // New function to close the image modal
+    const closeImageModal = () => {
+        setIsImageModalOpen(false);
+        setSelectedImage(null);
+    };
+
+    // New function to download attachment
+    const handleDownloadAttachment = (fileUrl, filename) => {
+        // Create a full URL
+        const fullUrl = `http://localhost:5000${fileUrl}`;
+        
+        // Create an anchor element and trigger download
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.download = filename;
+        link.target = "_blank"
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success(`Downloading ${filename}`);
+    };
 
     const handleImageUpload = async (e) => {
         e.preventDefault();
@@ -214,6 +246,46 @@ export const TrainingDetail = () => {
             navigate("/trainings");
         } else {
             toast.error("Failed to delete training.");
+        }
+    };
+
+    // New function to delete an image
+    const handleDeleteImage = async (imageId) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/training/${id}/images/${imageId}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (!response.ok) throw new Error("Failed to delete image");
+
+            // Update state by removing the deleted image
+            setTrainingImages(trainingImages.filter(img => img.imageid !== imageId));
+            toast.success("Image deleted successfully");
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
+
+    // New function to delete an attachment
+    const handleDeleteAttachment = async (attachmentId) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/training/${id}/attachments/${attachmentId}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (!response.ok) throw new Error("Failed to delete attachment");
+
+            // Update state by removing the deleted attachment
+            setTrainingAttachments(trainingAttachments.filter(att => att.attachmentid !== attachmentId));
+            toast.success("Attachment deleted successfully");
+        } catch (err) {
+            toast.error(err.message);
         }
     };
 
@@ -383,32 +455,47 @@ export const TrainingDetail = () => {
                                         disabled={uploadingImage}
                                         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {uploadingImage
-                                            ? "Uploading..."
-                                            : "Upload Image"}
+                                        {uploadingImage ? (
+                                            <span className="flex items-center justify-center">
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Uploading...
+                                            </span>
+                                        ) : (
+                                            "Upload Image"
+                                        )}
                                     </button>
                                 </div>
                             </form>
                         )}
 
-                        {/* Images Display */}
+                        {/* Images Display with View Modal and Delete Button */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {trainingImages.length > 0 ? (
                                 trainingImages.map((image) => (
                                     <div
                                         key={image.imageid}
-                                        className="border rounded overflow-hidden"
+                                        className="border rounded overflow-hidden relative group"
                                     >
                                         <img
                                             src={`http://localhost:5000${image.imageurl}`}
-                                            alt={
-                                                image.caption || "Training image"
-                                            }
-                                            className="w-full h-48 object-cover"
+                                            alt={image.caption || "Training image"}
+                                            className="w-full h-48 object-cover cursor-pointer"
+                                            onClick={() => openImageModal(image)}
                                         />
                                         {image.caption && (
                                             <div className="p-2 text-sm text-gray-700">
                                                 {image.caption}
+                                            </div>
+                                        )}
+                                        {user && (
+                                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => handleDeleteImage(image.imageid)}
+                                                    className="p-1 bg-red-600 rounded-full text-white hover:bg-red-700"
+                                                    title="Delete image"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
                                         )}
                                     </div>
@@ -421,7 +508,7 @@ export const TrainingDetail = () => {
                         </div>
                     </div>
 
-                    {/* Attachments List */}
+                    {/* Attachments List with Download and Delete Buttons */}
                     <div>
                         <h3 className="text-xl font-semibold mb-2">
                             Attachments
@@ -454,15 +541,20 @@ export const TrainingDetail = () => {
                                         disabled={uploadingAttachment}
                                         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {uploadingAttachment
-                                            ? "Uploading..."
-                                            : "Upload File"}
+                                        {uploadingAttachment ? (
+                                            <span className="flex items-center justify-center">
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Uploading...
+                                            </span>
+                                        ) : (
+                                            "Upload File"
+                                        )}
                                     </button>
                                 </div>
                             </form>
                         )}
 
-                        {/* Attachments Display */}
+                        {/* Attachments Display with Download and Delete Options */}
                         <div className="border rounded divide-y">
                             {trainingAttachments.length > 0 ? (
                                 trainingAttachments.map((attachment) => (
@@ -470,7 +562,7 @@ export const TrainingDetail = () => {
                                         key={attachment.attachmentid}
                                         className="p-3 flex justify-between items-center"
                                     >
-                                        <div>
+                                        <div className="flex-1">
                                             <h4 className="font-medium">
                                                 {attachment.filename}
                                             </h4>
@@ -490,16 +582,58 @@ export const TrainingDetail = () => {
                                                 KB
                                             </div>
                                         </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleDownloadAttachment(attachment.fileurl, attachment.filename)}
+                                                className="p-1 bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200"
+                                                title="Download file"
+                                            >
+                                                <Download size={18} />
+                                            </button>
+                                            {user && (
+                                                <button
+                                                    onClick={() => handleDeleteAttachment(attachment.attachmentid)}
+                                                    className="p-1 bg-red-100 rounded-full text-red-600 hover:bg-red-200"
+                                                    title="Delete file"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-gray-500">
-                                    No images uploaded yet.
+                                <p className="p-3 text-gray-500">
+                                    No attachments uploaded yet.
                                 </p>
                             )}
                         </div>
                     </div>
                 </section>
+                
+            {/* Image Modal */}
+            {isImageModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="relative bg-white p-0 rounded-lg">
+                        <button
+                            onClick={closeImageModal}
+                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-gray-800 hover:bg-gray-200"
+                        >
+                            <X size={20} />
+                        </button>
+                        <img
+                            src={`http://localhost:5000${selectedImage.imageurl}`}
+                            alt={selectedImage.caption || "Selected image"}
+                            className="w-96 h-auto object-contain"
+                        />
+                        {selectedImage.caption && (
+                            <div className="p-4 text-center text-sm text-gray-700">
+                                {selectedImage.caption}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

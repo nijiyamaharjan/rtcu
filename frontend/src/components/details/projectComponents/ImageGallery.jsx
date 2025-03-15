@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const ImageGallery = ({ projectID, user, images, onUpload, onDelete }) => {
     const [imageFile, setImageFile] = useState(null);
     const [caption, setCaption] = useState('');
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null); // State for the selected image for modal
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,6 +29,16 @@ const ImageGallery = ({ projectID, user, images, onUpload, onDelete }) => {
         } finally {
             setUploadingImage(false);
         }
+    };
+
+    const openModal = (image) => {
+        setSelectedImage(image);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedImage(null);
     };
 
     return (
@@ -87,11 +99,12 @@ const ImageGallery = ({ projectID, user, images, onUpload, onDelete }) => {
                             <img
                                 src={`http://localhost:5000${image.imageurl}`}
                                 alt={image.caption || "Project image"}
-                                className="w-full h-48 object-cover"
+                                className="w-full h-48 object-cover cursor-pointer"
+                                onClick={() => openModal(image)} // Open modal on image click
                             />
                             {image.caption && (
                                 <div className="p-2 text-sm text-gray-700">
-                                    {image.caption} 
+                                    {image.caption}
                                 </div>
                             )}
                             {user && (
@@ -113,6 +126,30 @@ const ImageGallery = ({ projectID, user, images, onUpload, onDelete }) => {
                     </p>
                 )}
             </div>
+
+            {/* Modal for Viewing Image */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="relative bg-white p-0 rounded-lg">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 bg-white rounded-full p-1 text-gray-800 hover:bg-gray-200"
+                        >
+                            <X size={20} />
+                        </button>
+                        <img
+                            src={`http://localhost:5000${selectedImage.imageurl}`}
+                            alt={selectedImage.caption || "Selected image"}
+                            className="w-96 h-auto object-contain"
+                        />
+                        {selectedImage.caption && (
+                            <div className="mt-2 text-center text-sm text-gray-700">
+                                {selectedImage.caption}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -6,12 +6,12 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Imported components
-import ProjectHeader from "./ProjectHeader";
-import ProjectDetails from "./ProjectDetails";
-import ProjectActions from "./ProjectActions";
-import TeamMembersSection from "./TeamMembersSection";
-import ProjectMediaSection from "./ProjectMediaSection";
-import UpdateProjectModal from "./UpdateProjectModal";
+import ProjectHeader from "./projectComponents/ProjectHeader";
+import ProjectDetails from "./projectComponents/ProjectDetails";
+import ProjectActions from "./projectComponents/ProjectActions";
+import TeamMembersSection from "./projectComponents/TeamMembersSection";
+import ProjectMediaSection from "./projectComponents/ProjectMediaSection";
+import UpdateProjectModal from "./projectComponents/UpdateProjectModal";
 
 export const ProjectDetail = () => {
     const { id: projectID } = useParams();
@@ -251,6 +251,7 @@ export const ProjectDetail = () => {
         const link = document.createElement('a');
         link.href = `http://localhost:5000${attachmentUrl}`;
         link.download = filename;
+        link.target = "_blank"
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

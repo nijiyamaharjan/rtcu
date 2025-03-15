@@ -1,6 +1,6 @@
 // TeamMembersSection.jsx
 import React from 'react';
-import { TeamMembers } from "../projects/TeamMembers";
+import { TeamMembers } from "../../projects/TeamMembers";
 
 const TeamMembersSection = ({ projectID }) => {
     return (
