@@ -198,7 +198,7 @@ export const TeamMembers = ({ projectID }) => {
     return (
         <div className="team-member-selector">
             {user && <>
-                <h3 className="text-2xl font-semibold mb-4">Add Team Member</h3>
+                <h3 className="text-xl font-semibold mb-4">Add Team Member</h3>
             <div className="flex items-center space-x-4">
 
                 <div className="flex-1">
@@ -275,7 +275,7 @@ export const TeamMembers = ({ projectID }) => {
             </>}
             
 
-            <h3 className="text-2xl font-semibold my-4">Project Team Members</h3>
+            <h3 className="text-xl font-semibold my-4">Project Team Members</h3>
             <table className="w-full text-sm border">
                 <thead className="border-b">
                     <tr>

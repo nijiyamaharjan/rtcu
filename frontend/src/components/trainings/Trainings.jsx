@@ -64,7 +64,7 @@ export const Trainings = () => {
   return (
     <section className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Trainings</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">All Trainings</h1>
         {user && (
           <Link
             to="/add-training"

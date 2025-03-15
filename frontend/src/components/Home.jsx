@@ -25,16 +25,17 @@ export const Home = () => {
   ];
 
   const objectives = [
-    "To promote research culture in engineering education",
-    "To enhance the quality of engineering education through practical training",
-    "To provide expert consultancy services to industries and organizations",
-    "To establish linkages with national and international research institutions",
-    "To develop innovative solutions for engineering challenges"
+    "To conduct or facilitate research and study.",
+    "To conduct or facilitate training.",
+    "To provide testing and other technical assistance.",
+    "To provide consultancy services at governmental, non-governmental, private, national, and international levels.",
+    "To conduct research in collaboration with research centers and universities within and outside the country.",
+    "To perform other tasks as designated by the profession and department."
   ];
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-indigo-900 text-white py-8 px-4 ">
+      {/* <header className="bg-indigo-900 text-white py-8 px-4 ">
         <div className="max-w-5xl mx-auto text-center">
           <img 
             src={tuLogo}
@@ -48,7 +49,7 @@ export const Home = () => {
             Research, Training, and Consultancy Unit
           </p>
         </div>
-      </header>
+      </header> */}
 
       <section id="about" className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">

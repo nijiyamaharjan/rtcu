@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { Sidebar } from './components/Navbar';
+import { Navbar } from './components/Navbar';
 import { Home } from './components/Home';
 import { ProjectDetail } from './components/details/ProjectDetail';
 import { AddFaculty } from './components/add/AddFaculty';
@@ -17,7 +17,7 @@ import LoginPage from './components/Login';
 import { Projects } from './components/projects/Projects';
 import { Trainings } from './components/trainings/Trainings';
 import { Team } from './components/team/Team';
-import { ToastContainer } from "react-toastify";
+import tuLogo from './assets/tu-logo.png';
 
 // Routes array
 const routes = [
@@ -43,19 +43,43 @@ const routes = [
 function AppContent() {
   const location = useLocation();
 
-  // Define paths where the Sidebar should be hidden
-  const hideSidebarRoutes = ['/login'];
+  // Define paths where the Navbar should be hidden
+  const hideNavbarRoutes = ['/login'];
 
   return (
-    
-    <div className="flex">
-      {/* Conditionally Render Sidebar */}
-      {!hideSidebarRoutes.includes(location.pathname) && <Sidebar />}
+    <div className="flex flex-col min-h-screen">
+      {/* RTCU Header - This remains on all pages */}
+      {!hideNavbarRoutes.includes(location.pathname) && (
+        <header className="bg-indigo-900 text-white py-6">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            {/* Logo/Emblem */}
+            <div className="w-20 h-20 mx-auto mb-4">
+              {/* This is a placeholder for your logo */}
+                        <img 
+                          src={tuLogo}
+                          alt="TU Logo"
+                          className="mx-auto mb-6 h-20 w-auto"
+                        />
+            </div>
+            
+            {/* Main Title */}
+            <h1 className="text-2xl font-bold mb-2">
+              RTCU at IOE, Tribhuvan University
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-blue-100">
+              Research, Training, and Consultancy Unit
+            </p>
+          </div>
+        </header>
+      )}
+
+      {/* Navigation Bar - Below the header */}
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
 
       {/* Main Content */}
-      <div
-        className={`flex-1 ${hideSidebarRoutes.includes(location.pathname) ? '' : 'p-0'} bg-gray-100 overflow-y-auto h-screen`}
-      >
+      <div className="flex-1 bg-gray-100 overflow-y-auto">
         <Routes>
           {routes.map((route, index) => (
             <Route key={index} path={route.path} element={route.element} />
@@ -68,12 +92,8 @@ function AppContent() {
 
 export default function App() {
   return (
-    <>
-        <ToastContainer position="top-right" autoClose={3000} />
-
     <BrowserRouter>
       <AppContent />
     </BrowserRouter>
-    </>
   );
 }
