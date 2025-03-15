@@ -55,7 +55,7 @@ export const AddFaculty = () => {
         expertiseid: '', // Reset expertiseid
         contactInfo: ''
       });
-      navigate('/team');
+      // navigate('/team');
     } else {
       toast.error('Error adding faculty');
     }
