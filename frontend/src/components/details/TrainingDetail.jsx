@@ -33,6 +33,10 @@ export const TrainingDetail = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const user = useAuth();
+    const [trainingImages, setTrainingImages] = useState([]);
+    const [trainingAttachments, setTrainingAttachments] = useState([]);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
     useEffect(() => {
         const fetchTrainingData = async () => {
@@ -54,6 +58,113 @@ export const TrainingDetail = () => {
 
         fetchTrainingData();
     }, [id]);
+
+    useEffect(() => {
+        const fetchTrainingMedia = async () => {
+            try {
+                // Fetch images
+                const imagesResponse = await fetch(
+                    `http://localhost:5000/training/${id}/images`
+                );
+                if (imagesResponse.ok) {
+                    const imagesData = await imagesResponse.json();
+                    setTrainingImages(imagesData);
+                }
+
+                // Fetch attachments
+                const attachmentsResponse = await fetch(
+                    `http://localhost:5000/training/${id}/attachments`
+                );
+                if (attachmentsResponse.ok) {
+                    const attachmentsData = await attachmentsResponse.json();
+                    setTrainingAttachments(attachmentsData);
+                }
+            } catch (err) {
+                console.error("Error fetching training media:", err);
+            }
+        };
+
+        if (id) {
+            fetchTrainingMedia();
+        }
+    }, [id]);
+
+    const handleImageUpload = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        const imageFile = e.target.image.files[0];
+        const caption = e.target.caption.value;
+
+        if (!imageFile) {
+            toast.error("Please select an image to upload");
+            return;
+        }
+
+        formData.append("image", imageFile);
+        formData.append("caption", caption);
+
+        setUploadingImage(true);
+
+        try {
+            const response = await fetch(
+                `http://localhost:5000/training/${id}/images`,
+                {
+                    method: "POST",
+                    body: formData,
+                    // No Content-Type header needed, it's set automatically for FormData
+                }
+            );
+
+            if (!response.ok) throw new Error("Failed to upload image");
+
+            const newImage = await response.json();
+            setTrainingImages([...trainingImages, newImage]);
+            toast.success("Image uploaded successfully");
+            e.target.reset();
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
+    const handleAttachmentUpload = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        const attachmentFile = e.target.attachment.files[0];
+        const description = e.target.description.value;
+
+        if (!attachmentFile) {
+            toast.error("Please select a file to upload");
+            return;
+        }
+
+        formData.append("attachment", attachmentFile);
+        formData.append("description", description);
+
+        setUploadingAttachment(true);
+
+        try {
+            const response = await fetch(
+                `http://localhost:5000/training/${id}/attachments`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            if (!response.ok) throw new Error("Failed to upload attachment");
+
+            const newAttachment = await response.json();
+            setTrainingAttachments([...trainingAttachments, newAttachment]);
+            toast.success("File uploaded successfully");
+            e.target.reset();
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setUploadingAttachment(false);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -127,6 +238,7 @@ export const TrainingDetail = () => {
                     <strong>End Date:</strong> {formatDate(training.enddate)}
                 </span>
             </div>
+            <p className="mt-4 text-gray-600">heyy</p>
 
             {user && (
                 <div className="pt-6">
@@ -198,6 +310,7 @@ export const TrainingDetail = () => {
                             onChange={handleChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                         />
+                        
                     </div>
                     <div className="flex justify-end gap-4 pt-4">
                         <button
@@ -218,7 +331,7 @@ export const TrainingDetail = () => {
             </Modal>
             <section className="pt-6">
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Project Media
+                        Training Media
                     </h2>
 
                     {/* Images Gallery */}
@@ -262,8 +375,8 @@ export const TrainingDetail = () => {
 
                         {/* Images Display */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {projectImages.length > 0 ? (
-                                projectImages.map((image) => (
+                            {trainingImages.length > 0 ? (
+                                trainingImages.map((image) => (
                                     <div
                                         key={image.imageid}
                                         className="border rounded overflow-hidden"
@@ -271,7 +384,7 @@ export const TrainingDetail = () => {
                                         <img
                                             src={`http://localhost:5000${image.imageurl}`}
                                             alt={
-                                                image.caption || "Project image"
+                                                image.caption || "Training image"
                                             }
                                             className="w-full h-48 object-cover"
                                         />
@@ -333,8 +446,8 @@ export const TrainingDetail = () => {
 
                         {/* Attachments Display */}
                         <div className="border rounded divide-y">
-                            {projectAttachments.length > 0 ? (
-                                projectAttachments.map((attachment) => (
+                            {trainingAttachments.length > 0 ? (
+                                trainingAttachments.map((attachment) => (
                                     <div
                                         key={attachment.attachmentid}
                                         className="p-3 flex justify-between items-center"
