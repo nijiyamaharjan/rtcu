@@ -212,17 +212,7 @@ export const ProjectDetail = () => {
                             <Pencil size={20} />
                         </button>
                     )}
-                    <button
-                        onClick={() =>
-                            setIsTeamMembersExpanded(!isTeamMembersExpanded)
-                        }
-                        className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
-                        title={
-                            isTeamMembersExpanded ? "Hide Team" : "Show Team"
-                        }
-                    >
-                        <Users size={20} />
-                    </button>
+                   
                     {user && (
                         <button
                             onClick={handleDelete}
@@ -234,14 +224,12 @@ export const ProjectDetail = () => {
                     )}
                 </div>
 
-                {isTeamMembersExpanded && (
                     <section className="pt-6">
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">
                             Team Members
                         </h2>
                         <TeamMembers projectID={project.projectid} />
                     </section>
-                )}
 
                 {isUpdateModalOpen && user && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
