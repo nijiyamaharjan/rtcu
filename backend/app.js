@@ -13,12 +13,14 @@ const user = require('./routes/user')
 const app = express();
 const cors = require('cors')
 const pool = require('./db');
+const path = require('path');
 app.use(cors({
     origin: 'http://localhost:5173'
 }))
 
 app.use(express.json())
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/project', projectRoutes);
 app.use('/role', roleRoutes);
 app.use('/expertise', expertiseRoutes);

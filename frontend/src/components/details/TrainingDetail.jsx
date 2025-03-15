@@ -216,6 +216,159 @@ export const TrainingDetail = () => {
                     </div>
                 </form>
             </Modal>
+            <section className="pt-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        Project Media
+                    </h2>
+
+                    {/* Images Gallery */}
+                    <div className="mb-8">
+                        <h3 className="text-xl font-semibold mb-2">Images</h3>
+
+                        {/* Image Upload Form */}
+                        {user && (
+                            <form
+                                onSubmit={handleImageUpload}
+                                className="mb-4 p-4 border rounded"
+                            >
+                                <h4 className="font-medium mb-2">
+                                    Upload New Image
+                                </h4>
+                                <div className="flex flex-col space-y-2">
+                                    <input
+                                        type="file"
+                                        name="image"
+                                        accept="image/*"
+                                        className="border p-2 rounded"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="caption"
+                                        placeholder="Caption (optional)"
+                                        className="border p-2 rounded"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={uploadingImage}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        {uploadingImage
+                                            ? "Uploading..."
+                                            : "Upload Image"}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {/* Images Display */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {projectImages.length > 0 ? (
+                                projectImages.map((image) => (
+                                    <div
+                                        key={image.imageid}
+                                        className="border rounded overflow-hidden"
+                                    >
+                                        <img
+                                            src={`http://localhost:5000${image.imageurl}`}
+                                            alt={
+                                                image.caption || "Project image"
+                                            }
+                                            className="w-full h-48 object-cover"
+                                        />
+                                        {image.caption && (
+                                            <div className="p-2 text-sm text-gray-700">
+                                                {image.caption}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">
+                                    No images uploaded yet.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Attachments List */}
+                    <div>
+                        <h3 className="text-xl font-semibold mb-2">
+                            Attachments
+                        </h3>
+
+                        {/* Attachment Upload Form */}
+                        {user && (
+                            <form
+                                onSubmit={handleAttachmentUpload}
+                                className="mb-4 p-4 border rounded"
+                            >
+                                <h4 className="font-medium mb-2">
+                                    Upload New Attachment
+                                </h4>
+                                <div className="flex flex-col space-y-2">
+                                    <input
+                                        type="file"
+                                        name="attachment"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                                        className="border p-2 rounded"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="description"
+                                        placeholder="Description (optional)"
+                                        className="border p-2 rounded"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={uploadingAttachment}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        {uploadingAttachment
+                                            ? "Uploading..."
+                                            : "Upload File"}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {/* Attachments Display */}
+                        <div className="border rounded divide-y">
+                            {projectAttachments.length > 0 ? (
+                                projectAttachments.map((attachment) => (
+                                    <div
+                                        key={attachment.attachmentid}
+                                        className="p-3 flex justify-between items-center"
+                                    >
+                                        <div>
+                                            <h4 className="font-medium">
+                                                {attachment.filename}
+                                            </h4>
+                                            {attachment.description && (
+                                                <p className="text-sm text-gray-500">
+                                                    {attachment.description}
+                                                </p>
+                                            )}
+                                            <div className="text-xs text-gray-400">
+                                                {new Date(
+                                                    attachment.uploaddate
+                                                ).toLocaleDateString()}{" "}
+                                                •
+                                                {(
+                                                    attachment.filesize / 1024
+                                                ).toFixed(2)}{" "}
+                                                KB
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">
+                                    No images uploaded yet.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </section>
         </div>
     );
 };

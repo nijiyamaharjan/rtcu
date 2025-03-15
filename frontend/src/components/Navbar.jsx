@@ -29,7 +29,7 @@ export const Navbar = () => {
     { path: '/', icon: Home, label: 'Home' },
     { path: '/projects', icon: Projects, label: 'Projects' },
     { path: '/trainings', icon: Trainings, label: 'Trainings' },
-    { path: '/team', icon: Users, label: 'Team' },
+    // { path: '/team', icon: Users, label: 'Team' },
   ];
 
   const isActive = (path) => window.location.pathname === path;

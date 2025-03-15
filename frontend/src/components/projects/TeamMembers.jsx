@@ -1,8 +1,11 @@
+// TeamMembers.jsx
 import { useState, useEffect } from "react";
-import { FaTrash, FaEdit, FaUserPlus } from "react-icons/fa";import useAuth from "../../hooks/useAuth";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useAuth from "../../hooks/useAuth";
+import AddTeamMemberForm from "./AddTeamMemberForm";
+import TeamMembersList from "./TeamMembersList";
+import AddTeamMemberButton from "./AddTeamMemberButton";
 
 export const TeamMembers = ({ projectID }) => {
     const [allTeam, setAllTeam] = useState({
@@ -11,12 +14,8 @@ export const TeamMembers = ({ projectID }) => {
         faculty: [],
     });
     const [teamMembers, setTeamMembers] = useState([]);
-    const [selectedMember, setSelectedMember] = useState(null);
-    const [contactInfo, setContactInfo] = useState("");
-    const [roleid, setRoleID] = useState("");
     const [roles, setRoles] = useState([]);
     const user = useAuth();
-    const [editingRole, setEditingRole] = useState(null);
     const [showAddMenu, setShowAddMenu] = useState(false);
 
     // Fetch roles from API
@@ -37,12 +36,13 @@ export const TeamMembers = ({ projectID }) => {
             );
             const data = await response.json();
             if (response.ok) {
-                setTeamMembers(data); // Save project-specific team members
+                setTeamMembers(data);
             }
         } catch (error) {
             console.error("Error fetching project team members:", error);
         }
     };
+
     // Fetch all available team members
     useEffect(() => {
         const fetchAllAvailable = async () => {
@@ -71,69 +71,6 @@ export const TeamMembers = ({ projectID }) => {
         fetchProjectTeamMembers();
     }, [projectID, roles]);
 
-    // Add team member
-    const handleAddTeamMember = async () => {
-        if (!selectedMember || !roleid) {
-            return;
-        }
-
-        try {
-            const newTeamMember = {
-                projectID: projectID,
-                memberid:
-                    selectedMember.studentid ||
-                    selectedMember.expertid ||
-                    selectedMember.facultyid,
-                name: selectedMember.name,
-                roleid: roleid,
-                expertiseid: selectedMember.expertiseid,
-                contactInfo: selectedMember.contactinfo,
-            };
-
-            const response = await fetch(
-                `http://localhost:5000/project/${projectID}/team/add`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(newTeamMember),
-                }
-            );
-
-            if (response.ok) {
-                setSelectedMember(null);
-                setContactInfo("");
-                setRoleID("");
-                fetchProjectTeamMembers(); // Refresh the project members list
-            }
-        } catch (error) {
-            console.error("Error adding team member:", error);
-        }
-    };
-
-    // Delete team member
-    const handleDeleteMember = async (memberID) => {
-        try {
-            const response = await fetch(
-                `http://localhost:5000/project/${projectID}/team/${memberID}`,
-                {
-                    method: "DELETE",
-                }
-            );
-
-            if (response.ok) {
-                setTeamMembers((prevMembers) =>
-                    prevMembers.filter((m) => m.memberid !== memberID)
-                ); // Remove member from state
-            } else {
-                console.error("Error deleting member");
-            }
-        } catch (error) {
-            console.error("Error during deletion:", error);
-        }
-    };
-
     const handleAddRole = async () => {
         const newRole = prompt("Enter new role name");
         if (newRole) {
@@ -154,9 +91,30 @@ export const TeamMembers = ({ projectID }) => {
         }
     };
 
+    // Delete team member
+    const handleDeleteMember = async (memberID) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/project/${projectID}/team/${memberID}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (response.ok) {
+                setTeamMembers((prevMembers) =>
+                    prevMembers.filter((m) => m.memberid !== memberID)
+                );
+            } else {
+                console.error("Error deleting member");
+            }
+        } catch (error) {
+            console.error("Error during deletion:", error);
+        }
+    };
 
     // Update team member role
-    const handleUpdateRole = async () => {
+    const handleUpdateRole = async (editingRole, roleid) => {
         if (!editingRole || !roleid) return;
 
         try {
@@ -186,9 +144,6 @@ export const TeamMembers = ({ projectID }) => {
                 } else {
                     console.error("Role not found");
                 }
-
-                setEditingRole(null);
-                setRoleID("");
             } else {
                 console.error("Failed to update role");
             }
@@ -205,238 +160,28 @@ export const TeamMembers = ({ projectID }) => {
                         <h3 className="text-xl font-semibold mb-4">
                             Add Team Member
                         </h3>
-                        <div className="relative inline-block mb-4">
-                            <button
-                                onClick={() => setShowAddMenu(!showAddMenu)}
-                                className="inline-flex items-center rounded-md bg-blue-600 ml-4 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-1"
-                            >
-                                 Register New Team Member
-                            </button>
-                            
-                            {showAddMenu && (
-                                <div className="absolute left-5 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                                    <div className="py-1" role="menu" aria-orientation="vertical">
-                                        <Link
-                                            to="/add-student"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem"
-                                            onClick={() => setShowAddMenu(false)}
-                                        >
-                                            Register as Student
-                                        </Link>
-                                        <Link
-                                            to="/add-faculty"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem"
-                                            onClick={() => setShowAddMenu(false)}
-                                        >
-                                            Register as Faculty
-                                        </Link>
-                                        <Link
-                                            to="/add-expert"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem"
-                                            onClick={() => setShowAddMenu(false)}
-                                        >
-                                            Register as Expert
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <AddTeamMemberButton 
+                            showAddMenu={showAddMenu} 
+                            setShowAddMenu={setShowAddMenu} 
+                        />
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="flex-1">
-                            
-                            <select
-                                id="member"
-                                onChange={(e) => {
-                                    const [type, index] =
-                                        e.target.value.split("-");
-                                    setSelectedMember(allTeam[type][index]);
-                                }}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="">Select Member</option>
-                                {["students", "experts", "faculty"].map(
-                                    (type) => (
-                                        <optgroup
-                                            key={type}
-                                            label={
-                                                type.charAt(0).toUpperCase() +
-                                                type.slice(1)
-                                            }
-                                            className="text-gray-700"
-                                        >
-                                            {allTeam[type].map(
-                                                (member, index) => (
-                                                    <option
-                                                        key={
-                                                            member.studentid ||
-                                                            member.expertid ||
-                                                            member.facultyid
-                                                        }
-                                                        value={`${type}-${index}`}
-                                                    >
-                                                        {member.name}
-                                                    </option>
-                                                )
-                                            )}
-                                        </optgroup>
-                                    )
-                                )}
-                            </select>
-                        </div>
-
-                        <div className="flex-1">
-                            
-                            <select
-                                id="roleid"
-                                name="roleid"
-                                value={roleid}
-                                onChange={(e) => setRoleID(e.target.value)}
-                                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                            >
-                                <option value="">Select Project Role</option>
-                                {roles.map((role) => (
-                                    <option
-                                        key={role.roleid}
-                                        value={role.roleid}
-                                    >
-                                        {role.rolename}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleAddRole}
-                            className="inline-flex items-center rounded-md bg-blue-600 ml-4 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-5"                        >
-                            Add New Role
-                        </button>
-
-                        {selectedMember && (
-                            <div>
-                                <button
-                                    onClick={handleAddTeamMember}
-                                    className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                >
-                                    Add Team Member
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    <AddTeamMemberForm
+                        allTeam={allTeam}
+                        roles={roles}
+                        projectID={projectID}
+                        fetchProjectTeamMembers={fetchProjectTeamMembers}
+                        handleAddRole={handleAddRole}
+                    />
                 </>
             )}
 
-            <h3 className="text-xl font-semibold my-4">Project Team Members</h3>
-            <table className="w-full text-sm border">
-                <thead className="border-b">
-                    <tr>
-                        {[
-                            "ID",
-                            "Name",
-                            "Project Role",
-                            "Expertise",
-                            "Contact Info",
-                        ].map((header) => (
-                            <th
-                                key={header}
-                                className="text-left py-2 px-2 text-gray-700 border-r"
-                            >
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {teamMembers.length === 0 ? (
-                        <tr>
-                            <td colSpan={6} className="text-center py-4">
-                                No team members found for this project.
-                            </td>
-                        </tr>
-                    ) : (
-                        teamMembers.map((member) => (
-                            <tr key={member.memberid} className="border-b">
-                                <td className="py-2 px-2 text-gray-600 border-r">
-                                    {member.memberid}
-                                </td>
-                                <td className="py-2 px-2 text-gray-600 border-r">
-                                    {member.name}
-                                </td>
-                                <td className="py-2 px-2 text-gray-600 border-r">
-                                    {editingRole === member.memberid ? (
-                                        <select
-                                            value={roleid}
-                                            onChange={(e) =>
-                                                setRoleID(e.target.value)
-                                            }
-                                            className="p-2 border border-gray-300"
-                                        >
-                                            <option value="">
-                                                Select Project Role
-                                            </option>
-                                            {roles.map((role) => (
-                                                <option
-                                                    key={role.roleid}
-                                                    value={role.roleid}
-                                                >
-                                                    {role.rolename}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        member.rolename
-                                    )}
-                                </td>
-                                <td className="py-2 px-2 text-gray-600 border-r">
-                                    {member.expertisename}
-                                </td>
-                                <td className="py-2 px-2 text-gray-600 border-r">
-                                    {member.contactinfo}
-                                </td>
-                                {user && (
-                                    <>
-                                        <td className="py-2 px-2 flex space-x-2">
-                                            <button
-                                                onClick={() =>
-                                                    handleDeleteMember(
-                                                        member.memberid
-                                                    )
-                                                }
-                                                className="text-gray-500 hover:text-red-500"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setEditingRole(
-                                                        member.memberid
-                                                    );
-                                                    setRoleID(member.roleid); // Set the role for editing
-                                                }}
-                                                className="text-blue-500"
-                                            >
-                                                <FaEdit />
-                                            </button>
-                                            {editingRole ===
-                                                member.memberid && (
-                                                <button
-                                                    onClick={handleUpdateRole}
-                                                    className="ml-2 text-green-500"
-                                                >
-                                                    Save
-                                                </button>
-                                            )}
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+            <TeamMembersList
+                teamMembers={teamMembers}
+                roles={roles}
+                user={user}
+                handleDeleteMember={handleDeleteMember}
+                handleUpdateRole={handleUpdateRole}
+            />
         </div>
     );
 };

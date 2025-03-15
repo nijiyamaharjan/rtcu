@@ -14,4 +14,17 @@ router.use('/:id/team', (req, res, next) => {
     next();
 }, teamMembersRoutes);
 
+router.get('/:id/images', projectController.getProjectImages);
+router.get('/:id/attachments', projectController.getProjectAttachments);
+
+router.delete('/images/:imageId', projectController.deleteProjectImage);
+router.delete('/attachments/:attachmentId', projectController.deleteProjectAttachment);
+
+// In projectRoutes.js - modify these routes
+const upload = require('../middleware/fileUpload');
+
+// Add these routes
+router.post('/:id/images', upload.single('image'), projectController.addProjectImage);
+router.post('/:id/attachments', upload.single('attachment'), projectController.addProjectAttachment);
+
 module.exports = router;

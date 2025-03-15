@@ -40,7 +40,8 @@ CREATE TABLE Training (
     trainingID VARCHAR PRIMARY KEY,
     title VARCHAR NOT NULL,
     startDate DATE,
-    endDate DATE
+    endDate DATE,
+    description VARCHAR,
 );
 
 -- Create Junction Tables
@@ -105,4 +106,48 @@ CREATE TABLE Student (
     contactInfo VARCHAR
     roleID INT REFERENCES Role(roleID) ON DELETE SET NULL,
     expertiseID INT REFERENCES Expertise(expertiseID) ON DELETE SET NULL,
+);
+
+-- Create ProjectImage Table
+CREATE TABLE ProjectImage (
+    imageID VARCHAR PRIMARY KEY,
+    projectID VARCHAR NOT NULL REFERENCES Project(projectID),
+    imageURL VARCHAR NOT NULL,
+    caption VARCHAR,
+    uploadDate DATE,
+    displayOrder INTEGER
+);
+
+-- Create ProjectAttachment Table
+CREATE TABLE ProjectAttachment (
+    attachmentID VARCHAR PRIMARY KEY,
+    projectID VARCHAR NOT NULL REFERENCES Project(projectID),
+    fileName VARCHAR NOT NULL,
+    fileURL VARCHAR NOT NULL,
+    fileType VARCHAR,
+    fileSize INTEGER,
+    uploadDate DATE,
+    description VARCHAR
+);
+
+-- Create TrainingImage Table
+CREATE TABLE TrainingImage (
+    imageID VARCHAR PRIMARY KEY,
+    trainingID VARCHAR NOT NULL REFERENCES Training(trainingID),
+    imageURL VARCHAR NOT NULL,
+    caption VARCHAR,
+    uploadDate DATE,
+    displayOrder INTEGER
+);
+
+-- Create TrainingAttachment Table
+CREATE TABLE TrainingAttachment (
+    attachmentID VARCHAR PRIMARY KEY,
+    trainingID VARCHAR NOT NULL REFERENCES Training(trainingID),
+    fileName VARCHAR NOT NULL,
+    fileURL VARCHAR NOT NULL,
+    fileType VARCHAR,
+    fileSize INTEGER,
+    uploadDate DATE,
+    description VARCHAR
 );
