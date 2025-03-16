@@ -16,7 +16,6 @@ export const TeamMembers = ({ projectID }) => {
     const [teamMembers, setTeamMembers] = useState([]);
     const [roles, setRoles] = useState([]);
     const user = useAuth();
-    const [showAddMenu, setShowAddMenu] = useState(false);
 
     // Fetch roles from API
     const fetchRoles = async () => {
@@ -156,15 +155,6 @@ export const TeamMembers = ({ projectID }) => {
         <div className="team-member-selector">
             {user && (
                 <>
-                    <div className="flex">
-                        <h3 className="text-xl font-semibold mb-4">
-                            Add Team Member
-                        </h3>
-                        <AddTeamMemberButton 
-                            showAddMenu={showAddMenu} 
-                            setShowAddMenu={setShowAddMenu} 
-                        />
-                    </div>
                     <AddTeamMemberForm
                         allTeam={allTeam}
                         roles={roles}

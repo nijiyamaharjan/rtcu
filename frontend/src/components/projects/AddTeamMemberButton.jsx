@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const AddTeamMemberButton = ({ showAddMenu, setShowAddMenu }) => {
     return (
-        <div className="relative inline-block mb-4">
+        <div className="relative inline-block mt-2">
             <button
                 onClick={() => setShowAddMenu(!showAddMenu)}
                 className="inline-flex items-center rounded-md bg-blue-600 ml-4 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-1"

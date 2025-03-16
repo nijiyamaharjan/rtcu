@@ -185,7 +185,7 @@ export const ProjectDetail = () => {
         
         try {
             const response = await fetch(
-                `http://localhost:5000/project/${projectID}/images/${imageId}`,
+                `http://localhost:5000/project/images/${imageId}`,
                 {
                     method: "DELETE",
                 }
@@ -232,7 +232,7 @@ export const ProjectDetail = () => {
         
         try {
             const response = await fetch(
-                `http://localhost:5000/project/${projectID}/attachments/${attachmentId}`,
+                `http://localhost:5000/project/attachments/${attachmentId}`,
                 {
                     method: "DELETE",
                 }
@@ -279,7 +279,7 @@ export const ProjectDetail = () => {
     }
 
     return (
-        <main className="max-w-4xl pl-8 pr-8 py-8">
+        <main className="w-4xl px-24 py-8">
             <section className="space-y-6">
                 <ProjectHeader project={project} />
                 

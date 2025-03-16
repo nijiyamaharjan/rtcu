@@ -55,7 +55,7 @@ export const AddOrganization = () => {
                 name: "",
                 contactInfo: "",
             });
-            navigate("/team"); // Navigate to the home page after successful form submission
+            // navigate("/team"); // Navigate to the home page after successful form submission
         } else {
             toast.error("Error adding organization");
         }

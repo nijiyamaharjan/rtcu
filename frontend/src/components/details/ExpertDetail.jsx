@@ -120,7 +120,7 @@ export const ExpertDetail = () => {
 
         if (response.ok) {
             toast.success("Expert deleted successfully");
-            navigate("/team"); // Redirect to home page after deletion
+            // navigate("/team"); // Redirect to home page after deletion
         } else {
             toast.error("Error deleting expert");
         }

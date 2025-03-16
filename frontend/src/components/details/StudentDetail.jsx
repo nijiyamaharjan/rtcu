@@ -111,7 +111,7 @@ export const StudentDetail = () => {
 
         if (response.ok) {
             toast.success("Student deleted successfully");
-            navigate("/team"); // Redirect to home page after deletion
+            // navigate("/team"); // Redirect to home page after deletion
         } else {
             toast.error("Error deleting student");
         }

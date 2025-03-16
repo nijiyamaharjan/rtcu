@@ -46,7 +46,7 @@ export const AddExpert = () => {
         if (response.ok) {
             toast.success("Expert added successfully!");
             setExpert({ expertID: "", name: "", expertiseid: "", contactInfo: "" });
-            navigate("/team");
+            // navigate("/team");
         } else {
             toast.error("Error adding expert");
         }

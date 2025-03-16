@@ -29,7 +29,7 @@ const ProjectDetails = ({ project, organizations, loadingOrganizations }) => {
                         }
                     ),
                 ],
-                ["Status", project.status],
+                ["Status", project.status],[],
                 [
                     "Funding Organization",
                     loadingOrganizations

@@ -123,7 +123,7 @@ export const FacultyDetail = () => {
 
             if (response.ok) {
                 toast.success("Faculty deleted successfully");
-                navigate("/team"); // Redirect to home page after deletion
+                // navigate("/team"); // Redirect to home page after deletion
             } else {
                 toast.error("Error deleting faculty");
             }
