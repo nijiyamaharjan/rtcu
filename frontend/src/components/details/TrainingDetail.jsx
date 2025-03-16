@@ -463,7 +463,7 @@ export const TrainingDetail = () => {
 
                 {/* Images Gallery */}
                 <div className="mb-8">
-                    <div className="flex gap-4">
+                    <div className="flex justify-between">
                         <h3 className="text-xl font-semibold mb-2">Images</h3>
                         {user && (
                             <button
@@ -521,7 +521,7 @@ export const TrainingDetail = () => {
 
                 {/* Attachments List with Download and Delete Buttons */}
                 <div>
-                    <div className="flex gap-4">
+                    <div className="flex justify-between">
                         <h3 className="text-xl font-semibold mb-2">
                             Attachments
                         </h3>

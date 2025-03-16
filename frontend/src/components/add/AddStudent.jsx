@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const AddStudent = () => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ export const AddStudent = () => {
             console.log("Fetched expertise:", data); // Debugging
             setExpertiseList(data);
         } catch (err) {
-            console.error("Error fetching expertise", err);
+            toast.error("Error fetching expertise");
         }
     };
 
@@ -41,17 +41,17 @@ export const AddStudent = () => {
         });
     };
 
-  // Handles form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Handles form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    const response = await fetch('http://localhost:5000/student/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(student),
-    });
+        const response = await fetch("http://localhost:5000/student/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(student),
+        });
 
         if (response.ok) {
             toast.success("Student added successfully");
@@ -102,89 +102,80 @@ export const AddStudent = () => {
         }
     };
 
-  return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6">Add Student</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Student ID */}
-        <div>
-          <label htmlFor="studentID" className="block text-sm font-medium text-gray-700">
-            Student ID
-          </label>
-          <input
-            type="text"
-            id="studentID"
-            name="studentID"
-            value={student.studentID}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
+    return (
+        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+            <h2 className="text-2xl font-semibold mb-6">Add Student</h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Student ID */}
+                <div>
+                    <label
+                        htmlFor="studentID"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Student ID
+                    </label>
+                    <input
+                        type="text"
+                        id="studentID"
+                        name="studentID"
+                        value={student.studentID}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        required
+                    />
+                </div>
 
-        {/* Name */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={student.name}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
+                {/* Name */}
+                <div>
+                    <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Name
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={student.name}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        required
+                    />
+                </div>
 
-        {/* Expertise Dropdown */}
-        <div>
-          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700">
-            Expertise
-          </label>
-          <select
-            id="expertise"
-            name="expertise"
-            value={student.expertise} // Updates when an option is clicked
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            style={{ maxHeight: '100px', overflowY: 'auto' }} // Limits height and adds scrolling
-          >
-            <option value="" disabled>
-              Select Expertise
-            </option>
-            {expertiseOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Role Dropdown */}
-        <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-            Role
-          </label>
-          <select
-            id="role"
-            name="role"
-            value={student.role} // Updates when an option is clicked
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            style={{ maxHeight: '100px', overflowY: 'auto' }} // Limits height and adds scrolling
-          >
-            <option value="" disabled>
-              Select Role
-            </option>
-            {roleOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+                {/* Expertise Dropdown */}
+                <div>
+                    <label
+                        htmlFor="expertise"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Expertise
+                    </label>
+                    <select
+                        id="expertise"
+                        name="expertise"
+                        value={student.expertise} // Updates when an option is clicked
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        style={{ maxHeight: "100px", overflowY: "auto" }} // Limits height and adds scrolling
+                    >
+                        <option value="" disabled>
+                            Select Expertise
+                        </option>
+                        {expertiseList.map((expertise) => (
+                            <option
+                                key={expertise.expertiseid}
+                                value={expertise.expertiseid}
+                            >
+                                {expertise.expertisename}
+                            </option>
+                        ))}
+                    </select>
+                    <button type="button" onClick={handleAddExpertise} className="mt-2 text-blue-600">
+                        Add New Expertise
+                    </button>
+                </div>
 
                 {/* Contact Info */}
                 <div>
@@ -209,13 +200,16 @@ export const AddStudent = () => {
                     )}
                 </div>
 
-        {/* Submit Button */}
-        <div>
-          <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white rounded-md">
-            Add Student
-          </button>
+                {/* Submit Button */}
+                <div>
+                    <button
+                        type="submit"
+                        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md"
+                    >
+                        Add Student
+                    </button>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
-  );
+    );
 };

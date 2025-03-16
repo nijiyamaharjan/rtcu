@@ -32,7 +32,7 @@ const ImageGallery = ({ projectID, user, images, onUpload, onDelete }) => {
 
     return (
         <div className="mb-8">
-            <div className='flex gap-4'>
+            <div className='flex justify-between'>
                 <h3 className="text-xl font-semibold mb-2">Images</h3>
                 {user && (
                     <button 

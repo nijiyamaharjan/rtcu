@@ -33,7 +33,7 @@ const AttachmentsList = ({ projectID, user, attachments, onUpload, onDelete, onD
 
     return (
         <div>
-            <div className='flex gap-4'>
+            <div className='flex justify-between'>
                 <h3 className="text-xl font-semibold mb-2">Attachments</h3>           
                 {user && (
                     <button 
