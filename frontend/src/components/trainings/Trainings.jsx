@@ -255,7 +255,7 @@ export const Trainings = () => {
               </div>
 
               
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
                 <select
                   value={filters.dateRange}
@@ -267,7 +267,7 @@ export const Trainings = () => {
                   <option value="current">Current Trainings</option>
                   <option value="future">Future Trainings</option>
                 </select>
-              </div>
+              </div> */}
             </div>
             <div className="mt-4 flex justify-end">
               <button
