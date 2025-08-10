@@ -19,6 +19,8 @@ The **RTCU Content Management System (CMS)** is designed to efficiently manage a
 ![ER Diagram](images/er.png)
 ![SChema Diagram](images/schema.png)
 
+Screenshots of the project are available here : https://drive.google.com/file/d/1jpJ24BOL2SDA8F2m6Lep3d1jUuMyiR_O/view?usp=sharing
+
 ## Entity Descriptions
 | Entity | Description |
 |--------|-------------|
